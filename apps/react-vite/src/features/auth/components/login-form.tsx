@@ -14,7 +14,8 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
   });
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirectTo');
-
+  
+  
   return (
     <div>
       <Form
@@ -22,14 +23,15 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
           login.mutate(values);
         }}
         schema={loginInputSchema}
+        
       >
         {({ register, formState }) => (
           <>
-            <Input
+            <Input 
               type="email"
               label="Email Address"
-              error={formState.errors['email']}
-              registration={register('email')}
+              error={formState.errors['emailId']}
+              registration={register('emailId')}
             />
             <Input
               type="password"

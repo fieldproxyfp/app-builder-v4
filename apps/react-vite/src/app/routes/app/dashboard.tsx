@@ -10,7 +10,7 @@ export const DashboardRoute = () => {
         Welcome <b>{`${user.data?.firstName} ${user.data?.lastName}`}</b>
       </h1>
       <h4 className="my-3">
-        Your role is : <b>{user.data?.role}</b>
+        Your Email is : <b>{user.data?.emailId}</b>
       </h4>
       <p className="font-medium">In this application you can:</p>
       {user.data?.role === ROLES.USER && (

@@ -15,3 +15,4 @@ test('profile', async ({ page }) => {
     .click();
   await expect(page.getByText('My bio')).toBeVisible();
 });
+ 

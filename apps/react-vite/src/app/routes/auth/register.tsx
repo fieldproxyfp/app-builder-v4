@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Layout } from '@/components/layouts/auth-layout';
 import { RegisterForm } from '@/features/auth/components/register-form';
 import { useTeams } from '@/features/teams/api/get-teams';
+import { UnProtectedRoute } from '@/lib/auth';
 
 export const RegisterRoute = () => {
   const navigate = useNavigate();
@@ -18,17 +19,19 @@ export const RegisterRoute = () => {
   });
 
   return (
-    <Layout title="Register your account">
-      <RegisterForm
-        onSuccess={() =>
-          navigate(`${redirectTo ? `${redirectTo}` : '/app'}`, {
-            replace: true,
-          })
-        }
-        chooseTeam={chooseTeam}
-        setChooseTeam={() => setChooseTeam(!chooseTeam)}
-        teams={teamsQuery.data}
-      />
-    </Layout>
+    <UnProtectedRoute>
+      <Layout title="Register your account">
+        <RegisterForm
+          onSuccess={() =>
+            navigate(`${redirectTo ? `${redirectTo}` : '/app'}`, {
+              replace: true,
+            })
+          }
+          chooseTeam={chooseTeam}
+          setChooseTeam={() => setChooseTeam(!chooseTeam)}
+          teams={teamsQuery.data}
+        />
+      </Layout>
+    </UnProtectedRoute>
   );
 };

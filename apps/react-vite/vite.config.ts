@@ -14,6 +14,9 @@ export default defineConfig({
   preview: {
     port: 3000,
   },
+  define: {
+    global: 'window'
+  },
   test: {
     globals: true,
     environment: 'jsdom',

@@ -32,7 +32,7 @@ function Component() {
   );
 }
 ```
-
+ 
 #### Stay consistent
 
 Keep your code style consistent. For example, if you name your components using pascal case, do it everywhere. Most of code consistency is achieved by using linters and code formatters, so make sure you have them set up in your project.

@@ -7,8 +7,8 @@ function authRequestInterceptor(config: InternalAxiosRequestConfig) {
   if (config.headers) {
     config.headers.Accept = 'application/json';
   }
-
-  config.withCredentials = true;
+  
+  config.withCredentials = false;
   return config;
 }
 
@@ -20,7 +20,7 @@ api.interceptors.request.use(authRequestInterceptor);
 api.interceptors.response.use(
   (response) => {
     return response.data;
-  },
+  }, 
   (error) => {
     const message = error.response?.data?.message || error.message;
     useNotifications.getState().addNotification({

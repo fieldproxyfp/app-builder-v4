@@ -14,10 +14,13 @@ export type Entity<T> = {
 export type User = Entity<{
   firstName: string;
   lastName: string;
-  email: string;
+  emailId: string;
   role: 'ADMIN' | 'USER';
   teamId: string;
   bio: string;
+  organizationId: string;
+  organizationName: string;
+  accountId: string;
 }>;
 
 export type AuthResponse = {

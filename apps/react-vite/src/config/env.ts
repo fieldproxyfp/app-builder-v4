@@ -39,3 +39,9 @@ ${Object.entries(parsedEnv.error.flatten().fieldErrors)
 };
 
 export const env = createEnv();
+
+global.ENV = env;
+global.NETWORK_REQUESTS = {};
+global.TOKEN = '';
+global.REFRESH_TOKEN = '';
+global.TIMEZONE = '';

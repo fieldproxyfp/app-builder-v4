@@ -8,10 +8,10 @@ import { useUser } from '@/lib/auth';
 export const LandingRoute = () => {
   const navigate = useNavigate();
   const user = useUser();
-
+  console.log({user})
   const handleStart = () => {
     if (user.data) {
-      navigate('/app');
+      // navigate('/app');
     } else {
       navigate('/auth/login');
     }
