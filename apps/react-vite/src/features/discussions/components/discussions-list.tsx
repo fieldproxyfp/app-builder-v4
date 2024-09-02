@@ -1,4 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router-dom';
 
 import { Link } from '@/components/ui/link';
 import { Spinner } from '@/components/ui/spinner';
@@ -10,8 +11,18 @@ import { useDiscussions } from '../api/get-discussions';
 
 import { DeleteDiscussion } from './delete-discussion';
 
-export const DiscussionsList = () => {
-  const discussionsQuery = useDiscussions();
+export type DiscussionsListProps = {
+  onDiscussionPrefetch?: (id: string) => void;
+};
+
+export const DiscussionsList = ({
+  onDiscussionPrefetch,
+}: DiscussionsListProps) => {
+  const [searchParams] = useSearchParams();
+
+  const discussionsQuery = useDiscussions({
+    page: +(searchParams.get('page') || 1),
+  });
   const queryClient = useQueryClient();
 
   if (discussionsQuery.isLoading) {
@@ -22,11 +33,14 @@ export const DiscussionsList = () => {
     );
   }
 
-  if (!discussionsQuery.data) return null;
+  const discussions = discussionsQuery.data?.data;
+  const meta = discussionsQuery.data?.meta;
+
+  if (!discussions) return null;
 
   return (
     <Table
-      data={discussionsQuery.data}
+      data={discussions}
       columns={[
         {
           title: 'Title',
@@ -48,6 +62,7 @@ export const DiscussionsList = () => {
                 onMouseEnter={() => {
                   // Prefetch the discussion data when the user hovers over the link
                   queryClient.prefetchQuery(getDiscussionQueryOptions(id));
+                  onDiscussionPrefetch?.(id);
                 }}
                 to={`./${id}`}
               >
@@ -64,6 +79,13 @@ export const DiscussionsList = () => {
           },
         },
       ]}
+      pagination={
+        meta && {
+          totalPages: meta.totalPages,
+          currentPage: meta.page,
+          rootUrl: '',
+        }
+      }
     />
   );
 };

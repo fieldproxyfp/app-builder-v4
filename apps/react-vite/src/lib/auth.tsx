@@ -1,16 +1,12 @@
 import { configureAuth } from 'react-query-auth';
 import { Navigate, useLocation } from 'react-router-dom';
-import { promise, z } from 'zod';
+import { z } from 'zod';
 
 import { AuthResponse, User } from '@/types/api';
 
 import { api } from './api-client';
-import { BackEndRequest } from '@/services/api-service/ProtectedApiInstance';
 import API_END_POINTS from '@/constants/apiEndPoints';
 import { appService } from '@/services/appService';
-import { resolve } from 'path';
-import BaseApiInstance from '@/services/api-service/BaseApiInstance';
-import axios from 'axios';
 
 // api call definitions for auth (types, schemas, requests):
 // these are not part of features as this is a module shared across features

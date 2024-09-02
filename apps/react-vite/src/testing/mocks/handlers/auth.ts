@@ -114,7 +114,7 @@ export const authHandlers = [
 
     try {
       const credentials = (await request.json()) as LoginBody;
-      const result = authenticate(credentials); 
+      const result = authenticate(credentials);
 
       // todo: remove once tests in Github Actions are fixed
       Cookies.set(AUTH_COOKIE, result.jwt, { path: '/' });
@@ -148,14 +148,13 @@ export const authHandlers = [
       },
     );
   }),
- 
+
   http.get(`${env.API_URL}/auth/me`, async ({ cookies }) => {
     await networkDelay();
- 
+
     try {
       const { user } = requireAuth(cookies);
-      console.log("----calleds---", { user })
-      return HttpResponse.json(user);
+      return HttpResponse.json({ data: user });
     } catch (error: any) {
       return HttpResponse.json(
         { message: error?.message || 'Server Error' },

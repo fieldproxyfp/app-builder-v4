@@ -1,9 +1,7 @@
-import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
-import { Layout } from '@/components/layouts/auth-layout';
+import { AuthLayout } from '@/components/layouts/auth-layout';
 import { LoginForm } from '@/features/auth/components/login-form';
-import { UnProtectedRoute, useUser } from '@/lib/auth';
-import { useEffect } from 'react';
 
 export const LoginRoute = () => {
   const navigate = useNavigate();
@@ -11,16 +9,14 @@ export const LoginRoute = () => {
   const redirectTo = searchParams.get('redirectTo');
 
   return (
-    <UnProtectedRoute>
-      <Layout title="Log in to your account">
-        <LoginForm
-          onSuccess={() => {
-            navigate(`${redirectTo ? `${redirectTo}` : '/app'}`, {
-              replace: true,
-            });
-          }}
-        />
-      </Layout>
-    </UnProtectedRoute>
+    <AuthLayout title="Log in to your account">
+      <LoginForm
+        onSuccess={() =>
+          navigate(`${redirectTo ? `${redirectTo}` : '/app'}`, {
+            replace: true,
+          })
+        }
+      />
+    </AuthLayout>
   );
 };
