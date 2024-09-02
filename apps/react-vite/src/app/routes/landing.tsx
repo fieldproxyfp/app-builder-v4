@@ -8,7 +8,7 @@ import { useUser } from '@/lib/auth';
 export const LandingRoute = () => {
   const navigate = useNavigate();
   const user = useUser();
-  console.log({user:user.data})
+  console.log({ user: user.data });
   const handleStart = () => {
     if (user.data) {
       navigate('/app');
@@ -19,11 +19,11 @@ export const LandingRoute = () => {
 
   return (
     <>
-      <Head description="Welcome to bulletproof react" />
+      <Head description="Welcome to Fieldproxy" />
       <div className="flex h-screen items-center bg-white">
         <div className="mx-auto max-w-7xl px-4 py-12 text-center sm:px-6 lg:px-8 lg:py-16">
           <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-            <span className="block">Bulletproof React</span>
+            <span className="block">Fieldproxy</span>
           </h2>
           <img src={logo} alt="react" />
           <p>Showcasing Best Practices For Building React Applications</p>

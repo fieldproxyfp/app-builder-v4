@@ -13,7 +13,7 @@ module.exports = {
       },
     },
     extend: {
-      fontFamily: {
+      fontFamily: { 
         sans: ['Inter var', ...defaultTheme.fontFamily.sans],
       },
       colors: {

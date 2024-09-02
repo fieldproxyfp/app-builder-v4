@@ -21,16 +21,14 @@ import { Link } from '../ui/link';
 type SideNavigationItem = {
   name: string;
   to: string;
-  icon: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
+  icon: string;
 };
 
 const Logo = () => {
   return (
     <Link className="flex items-center text-white" to="/">
       <img className="h-8 w-auto" src={logo} alt="Workflow" />
-      <span className="text-sm font-semibold text-white">
-        Bulletproof React
-      </span>
+      <span className="text-sm font-semibold text-white">Fieldproxy</span>
     </Link>
   );
 };
@@ -80,17 +78,17 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { checkAccess } = useAuthorization();
   const navigate = useNavigate();
   const navigation = [
-    { name: 'Dashboard', to: '.', icon: Home },
-    { name: 'Discussions', to: './discussions', icon: Folder },
+    { name: 'Dashboard', to: '.', icon: 'home' },
+    { name: 'Discussions', to: './discussions', icon: 'folder' },
     checkAccess({ allowedRoles: [ROLES.ADMIN] }) && {
       name: 'Users',
       to: './users',
-      icon: Users,
+      icon: 'user',
     },
   ].filter(Boolean) as SideNavigationItem[];
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-muted/40">
+    <div className="flex min-h-screen w-full flex-col bg-muted/40 ">
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-60 flex-col border-r bg-black sm:flex">
         <nav className="flex flex-col items-center gap-4 px-2 py-4">
           <div className="flex h-16 shrink-0 items-center px-4">
@@ -109,13 +107,16 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 )
               }
             >
-              <item.icon
+              <span
                 className={cn(
                   'text-gray-400 group-hover:text-gray-300',
-                  'mr-4 size-6 shrink-0',
+                  'mr-4 size-6 shrink-0 material-icons-outlined',
                 )}
                 aria-hidden="true"
-              />
+              >
+                {item.icon}
+              </span>
+              <item.icon aria-hidden="true" />
               {item.name}
             </NavLink>
           ))}
@@ -152,13 +153,16 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                       )
                     }
                   >
-                    <item.icon
+                    <span
                       className={cn(
                         'text-gray-400 group-hover:text-gray-300',
-                        'mr-4 size-6 shrink-0',
+                        'mr-4 size-6 shrink-0 material-icons-outlined',
                       )}
                       aria-hidden="true"
-                    />
+                    >
+                      {item.icon}
+                    </span>
+
                     {item.name}
                   </NavLink>
                 ))}

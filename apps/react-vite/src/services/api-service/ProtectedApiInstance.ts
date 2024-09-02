@@ -64,14 +64,17 @@ export const getRequestDetails = async <T>(service: string, body?: object, optio
 	if (token) {
 		const headers = {
 			[X_SERVICE_NAME]: service,
-			Authorization: `Bearer ${token}`
+			Authorization: `Bearer ${token}`,
+			'x-access-token': token
 		};
 		return { body, headers };
 	}
 	const result: string = await appService.getUpdatedToken();
+	console.log({ result })
 	const headers = {
 		[X_SERVICE_NAME]: service,
-		Authorization: `Bearer ${result}`
+		Authorization: `Bearer ${result}`,
+		'x-access-token': result
 	};
 	return { body, headers };
 };

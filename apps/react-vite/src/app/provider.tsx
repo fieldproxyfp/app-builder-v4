@@ -8,18 +8,13 @@ import { MainErrorFallback } from '@/components/errors/main';
 import { Notifications } from '@/components/ui/notifications';
 import { Spinner } from '@/components/ui/spinner';
 import { AuthLoader } from '@/lib/auth';
-// import { createPublicRouter } from './routes';
-import { RouterProvider } from 'react-router-dom';
 import { queryConfig } from '@/lib/react-query';
+import 'material-icons/iconfont/material-icons.css';
 
 type AppProviderProps = {
   children: React.ReactNode;
 };
 
-// const PublicRouter = () => {
-//   const router = React.useMemo(() => createPublicRouter(), []);
-//   return <RouterProvider router={router} />;
-// };
 
 export const AppProvider = ({ children }: AppProviderProps) => {
   const [queryClient] = React.useState(
