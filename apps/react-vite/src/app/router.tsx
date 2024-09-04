@@ -42,6 +42,13 @@ export const createAppRouter = (queryClient: QueryClient) =>
       ),
       children: [
         {
+          path: 'apps',
+          lazy: async () => {
+            const { AppsRoute } = await import('./routes/app/apps');
+            return { Component: AppsRoute };
+          },
+        },
+        {
           path: 'discussions',
           lazy: async () => {
             const { DiscussionsRoute } = await import(

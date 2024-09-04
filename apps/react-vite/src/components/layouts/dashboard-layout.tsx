@@ -79,6 +79,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const navigation = [
     { name: 'Dashboard', to: '.', icon: 'home' },
+    { name: 'Apps', to: './apps', icon: 'apps' },
     { name: 'Discussions', to: './discussions', icon: 'folder' },
     checkAccess({ allowedRoles: [ROLES.ADMIN] }) && {
       name: 'Users',

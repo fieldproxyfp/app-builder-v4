@@ -24,6 +24,7 @@ export const POLICIES = {
     return false;
   },
 };
+
 export const useAuthorization = () => {
   const user = useUser();
 

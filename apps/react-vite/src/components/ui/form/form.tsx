@@ -191,13 +191,13 @@ const Form = <
   schema,
 }: FormProps<TFormValues, Schema>) => {
   const form = useForm({ ...options, resolver: zodResolver(schema) });
+
   return (
     <FormProvider {...form}>
       <form
         className={cn('space-y-6', className)}
         onSubmit={form.handleSubmit(onSubmit)}
         id={id}
-        
       >
         {children(form)}
       </form>
@@ -206,13 +206,13 @@ const Form = <
 };
 
 export {
-  useFormField,
   Form,
-  FormProvider,
-  FormItem,
-  FormLabel,
   FormControl,
   FormDescription,
-  FormMessage,
   FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormProvider,
+  useFormField,
 };

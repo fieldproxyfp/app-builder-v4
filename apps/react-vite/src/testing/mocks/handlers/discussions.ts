@@ -21,9 +21,9 @@ export const discussionsHandlers = [
 
     try {
       const { user, error } = requireAuth(cookies);
-      if (error) {
-        return HttpResponse.json({ message: error }, { status: 401 });
-      }
+      // if (error) {
+      //   return HttpResponse.json({ message: error }, { status: 401 });
+      // }
 
       const url = new URL(request.url);
 
