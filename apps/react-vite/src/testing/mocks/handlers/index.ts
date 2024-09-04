@@ -4,6 +4,7 @@ import { env } from '@/config/env';
 
 import { networkDelay } from '../utils';
 
+import { appsHandlers } from './apps';
 import { authHandlers } from './auth';
 import { commentsHandlers } from './comments';
 import { discussionsHandlers } from './discussions';
@@ -16,6 +17,7 @@ export const handlers = [
   ...discussionsHandlers,
   ...teamsHandlers,
   ...usersHandlers,
+  ...appsHandlers,
   http.get(`${env.API_URL}/healthcheck`, async () => {
     await networkDelay();
     return HttpResponse.json({ ok: true });

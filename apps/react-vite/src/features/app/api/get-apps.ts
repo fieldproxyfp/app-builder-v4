@@ -11,7 +11,7 @@ export const getApps = (
     data: AppT[];
     meta: Meta;
 }> => {
-    return api.get(`/apps`, {
+    return api.get(`/app`, {
         params: {
             page,
         },

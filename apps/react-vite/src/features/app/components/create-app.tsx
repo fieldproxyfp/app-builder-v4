@@ -24,7 +24,7 @@ export const CreateApp = () => {
       onSuccess: () => {
         addNotification({
           type: 'success',
-          title: 'Discussion Created',
+          title: 'App Created',
         });
       },
     },

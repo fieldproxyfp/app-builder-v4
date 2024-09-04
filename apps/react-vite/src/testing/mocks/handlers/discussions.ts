@@ -4,10 +4,10 @@ import { env } from '@/config/env';
 
 import { db, persistDb } from '../db';
 import {
-  requireAuth,
-  requireAdmin,
-  sanitizeUser,
   networkDelay,
+  requireAdmin,
+  requireAuth,
+  sanitizeUser,
 } from '../utils';
 
 type DiscussionBody = {

@@ -34,6 +34,14 @@ const models = {
     discussionId: String,
     createdAt: Date.now,
   },
+  app: {
+    id: primaryKey(nanoid),
+    title: String,
+    description: String,
+    authorId: String,
+    type: String,
+    createdAt: Date.now,
+  }
 };
 
 export const db = factory(models);
