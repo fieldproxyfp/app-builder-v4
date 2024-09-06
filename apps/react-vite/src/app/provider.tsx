@@ -9,7 +9,7 @@ import { Notifications } from '@/components/ui/notifications';
 import { Spinner } from '@/components/ui/spinner';
 import { AuthLoader } from '@/lib/auth';
 import { queryConfig } from '@/lib/react-query';
-import 'material-icons/iconfont/material-icons.css';
+import 'material-icons/iconfont/round.css';
 
 type AppProviderProps = {
   children: React.ReactNode;

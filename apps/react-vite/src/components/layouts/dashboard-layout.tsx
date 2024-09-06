@@ -1,4 +1,4 @@
-import { Home, PanelLeft, Folder, Users, User2 } from 'lucide-react';
+import { PanelLeft, User2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useNavigation } from 'react-router-dom';
 
@@ -111,7 +111,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               <span
                 className={cn(
                   'text-gray-400 group-hover:text-gray-300',
-                  'mr-4 size-6 shrink-0 material-icons-outlined',
+                  'mr-4 size-6 shrink-0 material-icons-round',
                 )}
                 aria-hidden="true"
               >

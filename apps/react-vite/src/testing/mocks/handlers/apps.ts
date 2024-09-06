@@ -25,6 +25,27 @@ export const appsHandlers = [
         }
     }),
 
+    http.delete(`${env.API_URL}/app/:id`, async ({ params }) => {
+        await networkDelay();
+        try {
+            const deleteAppId = params.id as string;
+            const result = db.app.delete({
+                where: {
+                    id: {
+                        equals: deleteAppId,
+                    }
+                }
+            });
+            await persistDb('app');
+            return HttpResponse.json(result);
+        } catch (error: any) {
+            return HttpResponse.json(
+                { message: error?.message || 'Server Error' },
+                { status: 500 }
+            );
+        }
+    }),
+
     http.get(`${env.API_URL}/app`, async ({ cookies, request }) => {
         await networkDelay();
         try {

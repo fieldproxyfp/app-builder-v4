@@ -5,10 +5,14 @@ import { Spinner } from '@/components/ui/spinner';
 import { Table } from '@/components/ui/table';
 import { formatDate } from '@/utils/format';
 
+import { Fragment } from 'react/jsx-runtime';
+import { useDeleteApp } from '../api/delete-app';
 import { useApps } from '../api/get-apps';
+import { DeleteApp } from './delete-app';
 
 export const AppsList = () => {
   const [searchParams] = useSearchParams();
+  const { mutate: deleteApp, isPending } = useDeleteApp();
 
   const appsQuery = useApps({
     page: +(searchParams.get('page') || 1),
@@ -20,6 +24,16 @@ export const AppsList = () => {
         <Spinner size="lg" />
       </div>
     );
+  }
+
+  if (appsQuery.isError) {
+    return (
+      <div className="flex h-48 w-full items-center justify-center">
+        <div className="text-destructive text-lg">
+          An error occurred while fetching apps. Please try again later.
+        </div>
+      </div>
+    )
   }
 
   const apps = appsQuery.data?.data;
@@ -50,13 +64,14 @@ export const AppsList = () => {
           },
         },
         {
-          title: '',
+          title: "Actions",
           field: 'id',
           Cell({ entry: { id } }) {
             return (
-              <span className="material-icons-outlined text-destructive cursor-pointer">
-                delete
-              </span>
+              <Fragment>
+                <DeleteApp id={id} />
+
+              </Fragment>
             );
           },
         },
