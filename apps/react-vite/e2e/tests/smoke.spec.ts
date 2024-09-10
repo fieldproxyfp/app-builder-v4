@@ -1,8 +1,8 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 import {
-  createDiscussion,
   createComment,
+  createDiscussion,
 } from '../../src/testing/data-generators';
 test('smoke', async ({ page }) => {
   const discussion = createDiscussion();
@@ -10,11 +10,11 @@ test('smoke', async ({ page }) => {
 
   await page.goto('/');
   await page.getByRole('button', { name: 'Get started' }).click();
-  await page.waitForURL('/app');
+  await page.waitForURL('/portal');
 
   // create discussion:
   await page.getByRole('link', { name: 'Discussions' }).click();
-  await page.waitForURL('/app/discussions');
+  await page.waitForURL('/portal/discussions');
 
   await page.getByRole('button', { name: 'Create Discussion' }).click();
   await page.getByLabel('Title').click();
@@ -80,7 +80,7 @@ test('smoke', async ({ page }) => {
 
   // go back to discussions:
   await page.getByRole('link', { name: 'Discussions' }).click();
-  await page.waitForURL('/app/discussions');
+  await page.waitForURL('/portal/discussions');
 
   // delete discussion:
   await page.getByRole('button', { name: 'Delete Discussion' }).click();

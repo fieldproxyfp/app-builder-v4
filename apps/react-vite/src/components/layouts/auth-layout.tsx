@@ -19,7 +19,7 @@ export const AuthLayout = ({ children, title }: LayoutProps) => {
 
   useEffect(() => {
     if (user.data) {
-      navigate('/app', {
+      navigate('/portal', {
         replace: true,
       });
     }

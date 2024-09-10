@@ -4,9 +4,9 @@ import { z } from 'zod';
 
 import { AuthResponse, User } from '@/types/api';
 
-import { api } from './api-client';
 import API_END_POINTS from '@/constants/apiEndPoints';
 import { appService } from '@/services/appService';
+import { api } from './api-client';
 
 // api call definitions for auth (types, schemas, requests):
 // these are not part of features as this is a module shared across features
@@ -119,7 +119,7 @@ export const UnProtectedRoute = ({
   const user = useUser();
 
   if (user.data && user.data.accountId) {
-    return <Navigate to={`/app`} replace />;
+    return <Navigate to={`/portal`} replace />;
   }
 
   return children;

@@ -11,7 +11,7 @@ export const LandingRoute = () => {
   console.log({ user: user.data });
   const handleStart = () => {
     if (user.data) {
-      navigate('/app');
+      navigate('/portal');
     } else {
       navigate('/auth/login');
     }

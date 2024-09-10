@@ -1,8 +1,8 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 test('profile', async ({ page }) => {
   // update user:
-  await page.goto('/app');
+  await page.goto('/portal');
   await page.getByRole('button', { name: 'Open user menu' }).click();
   await page.getByRole('menuitem', { name: 'Your Profile' }).click();
   await page.getByRole('button', { name: 'Update Profile' }).click();
@@ -15,4 +15,3 @@ test('profile', async ({ page }) => {
     .click();
   await expect(page.getByText('My bio')).toBeVisible();
 });
- 

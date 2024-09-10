@@ -5,14 +5,11 @@ import { Spinner } from '@/components/ui/spinner';
 import { Table } from '@/components/ui/table';
 import { formatDate } from '@/utils/format';
 
-import { Fragment } from 'react/jsx-runtime';
-import { useDeleteApp } from '../api/delete-app';
 import { useApps } from '../api/get-apps';
 import { DeleteApp } from './delete-app';
 
 export const AppsList = () => {
   const [searchParams] = useSearchParams();
-  const { mutate: deleteApp, isPending } = useDeleteApp();
 
   const appsQuery = useApps({
     page: +(searchParams.get('page') || 1),
@@ -50,6 +47,10 @@ export const AppsList = () => {
           field: 'title',
         },
         {
+          title: 'Description',
+          field: 'description',
+        },
+        {
           title: 'Created At',
           field: 'createdAt',
           Cell({ entry: { createdAt } }) {
@@ -57,21 +58,15 @@ export const AppsList = () => {
           },
         },
         {
-          title: '',
-          field: 'id',
-          Cell({ entry: { id } }) {
-            return <Link to={`./${id}`}>View</Link>;
-          },
-        },
-        {
           title: "Actions",
           field: 'id',
           Cell({ entry: { id } }) {
             return (
-              <Fragment>
+              <div className="flex items-center gap-4">
+                <Link to={`/portal/app/${id}`}>View</Link>
                 <DeleteApp id={id} />
 
-              </Fragment>
+              </div>
             );
           },
         },

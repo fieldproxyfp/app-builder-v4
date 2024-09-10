@@ -8,7 +8,7 @@ import {
 
 import { ProtectedRoute } from '@/lib/auth';
 
-import { AppRoot } from './routes/app/root';
+import { AppRoot } from './routes/portal/root';
 
 export const createAppRouter = (queryClient: QueryClient) =>
   createBrowserRouter([
@@ -34,7 +34,7 @@ export const createAppRouter = (queryClient: QueryClient) =>
       },
     },
     {
-      path: '/app',
+      path: '/portal',
       element: (
         <ProtectedRoute>
           <AppRoot />
@@ -42,9 +42,46 @@ export const createAppRouter = (queryClient: QueryClient) =>
       ),
       children: [
         {
+          path: '',
+          lazy: async () => {
+            const { DashboardRoute } = await import('./routes/portal/dashboard');
+            return { Component: DashboardRoute };
+          },
+        },
+        {
+          path: 'app/:appId',
+          lazy: async () => {
+            const { AppRoute } = await import('./routes/portal/app');
+            return { Component: AppRoute };
+          },
+          children: [
+            {
+              path: 'settings',
+              lazy: async () => {
+                const { AppSettingsRoute } = await import('./routes/portal/app/settings');
+                return { Component: AppSettingsRoute };
+              },
+            },
+            {
+              path: 'data',
+              lazy: async () => {
+                const { AppDataRoute } = await import('./routes/portal/app/data');
+                return { Component: AppDataRoute };
+              },
+            },
+            {
+              path: 'design',
+              lazy: async () => {
+                const { AppDesignRoute } = await import('./routes/portal/app/design');
+                return { Component: AppDesignRoute };
+              },
+            }
+          ],
+        },
+        {
           path: 'apps',
           lazy: async () => {
-            const { AppsRoute } = await import('./routes/app/apps');
+            const { AppsRoute } = await import('./routes/portal/apps');
             return { Component: AppsRoute };
           },
         },
@@ -52,13 +89,13 @@ export const createAppRouter = (queryClient: QueryClient) =>
           path: 'discussions',
           lazy: async () => {
             const { DiscussionsRoute } = await import(
-              './routes/app/discussions/discussions'
+              './routes/portal/discussions/discussions'
             );
             return { Component: DiscussionsRoute };
           },
           loader: async (args: LoaderFunctionArgs) => {
             const { discussionsLoader } = await import(
-              './routes/app/discussions/discussions'
+              './routes/portal/discussions/discussions'
             );
             return discussionsLoader(queryClient)(args);
           },
@@ -67,14 +104,14 @@ export const createAppRouter = (queryClient: QueryClient) =>
           path: 'discussions/:discussionId',
           lazy: async () => {
             const { DiscussionRoute } = await import(
-              './routes/app/discussions/discussion'
+              './routes/portal/discussions/discussion'
             );
             return { Component: DiscussionRoute };
           },
 
           loader: async (args: LoaderFunctionArgs) => {
             const { discussionLoader } = await import(
-              './routes/app/discussions/discussion'
+              './routes/portal/discussions/discussion'
             );
             return discussionLoader(queryClient)(args);
           },
@@ -82,29 +119,23 @@ export const createAppRouter = (queryClient: QueryClient) =>
         {
           path: 'users',
           lazy: async () => {
-            const { UsersRoute } = await import('./routes/app/users');
+            const { UsersRoute } = await import('./routes/portal/users');
             return { Component: UsersRoute };
           },
 
           loader: async () => {
-            const { usersLoader } = await import('./routes/app/users');
+            const { usersLoader } = await import('./routes/portal/users');
             return usersLoader(queryClient)();
           },
         },
         {
           path: 'profile',
           lazy: async () => {
-            const { ProfileRoute } = await import('./routes/app/profile');
+            const { ProfileRoute } = await import('./routes/portal/profile');
             return { Component: ProfileRoute };
           },
         },
-        {
-          path: '',
-          lazy: async () => {
-            const { DashboardRoute } = await import('./routes/app/dashboard');
-            return { Component: DashboardRoute };
-          },
-        },
+
       ],
     },
     {

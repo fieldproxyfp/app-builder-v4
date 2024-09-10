@@ -1,10 +1,10 @@
 import {
+  createDiscussion,
+  createUser,
   renderApp,
   screen,
   userEvent,
   waitFor,
-  createDiscussion,
-  createUser,
   within,
 } from '@/testing/test-utils';
 
@@ -16,8 +16,8 @@ const renderDiscussion = async () => {
 
   const utils = await renderApp(<DiscussionRoute />, {
     user: fakeUser,
-    path: `/app/discussions/:discussionId`,
-    url: `/app/discussions/${fakeDiscussion.id}`,
+    path: `/portal/discussions/:discussionId`,
+    url: `/portal/discussions/${fakeDiscussion.id}`,
   });
 
   await screen.findByText(fakeDiscussion.title);

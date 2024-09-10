@@ -2,6 +2,6 @@ import { Entity } from "./api";
 
 export type AppT = Entity<{
     title: string;
-    desciption: string;
+    description: string;
     type: "web" | "mobile",
 }>
