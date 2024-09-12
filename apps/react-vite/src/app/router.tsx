@@ -8,7 +8,8 @@ import {
 
 import { ProtectedRoute } from '@/lib/auth';
 
-import { AppRoot } from './routes/portal/root';
+import { AppRoot } from './routes/portal/app/root';
+import { PortalRoot } from './routes/portal/root';
 
 export const createAppRouter = (queryClient: QueryClient) =>
   createBrowserRouter([
@@ -34,10 +35,61 @@ export const createAppRouter = (queryClient: QueryClient) =>
       },
     },
     {
-      path: '/portal',
+      path: "/app",
       element: (
         <ProtectedRoute>
           <AppRoot />
+        </ProtectedRoute>
+      ),
+      children: [
+        {
+          path: ':appId',
+          lazy: async () => {
+            const { AppRoute } = await import('./routes/portal/app');
+            return { Component: AppRoute };
+          },
+          children: [
+            {
+              path: ':screenId',
+              lazy: async () => {
+                const { ScreenRoute } = await import('./routes/portal/app/screen');
+                return { Component: ScreenRoute };
+              },
+              children: [
+                {
+                  path: 'settings',
+                  lazy: async () => {
+                    const { PageActions: AppSettingsRoute } = await import('./routes/portal/app/screen/actions');
+                    return { Component: AppSettingsRoute };
+                  },
+                },
+                {
+                  path: 'data',
+                  lazy: async () => {
+                    const { AppDataRoute } = await import('./routes/portal/app/screen/data');
+                    return { Component: AppDataRoute };
+                  },
+                },
+                {
+                  path: 'design',
+                  lazy: async () => {
+                    const { AppDesignRoute } = await import('./routes/portal/app/screen/design');
+                    return { Component: AppDesignRoute };
+                  },
+                }
+              ]
+
+            },
+
+          ],
+        },
+      ]
+    },
+    {
+      path: '/portal',
+      element: (
+        <ProtectedRoute>
+          <PortalRoot />
         </ProtectedRoute>
       ),
       children: [
@@ -48,36 +100,7 @@ export const createAppRouter = (queryClient: QueryClient) =>
             return { Component: DashboardRoute };
           },
         },
-        {
-          path: 'app/:appId',
-          lazy: async () => {
-            const { AppRoute } = await import('./routes/portal/app');
-            return { Component: AppRoute };
-          },
-          children: [
-            {
-              path: 'settings',
-              lazy: async () => {
-                const { AppSettingsRoute } = await import('./routes/portal/app/settings');
-                return { Component: AppSettingsRoute };
-              },
-            },
-            {
-              path: 'data',
-              lazy: async () => {
-                const { AppDataRoute } = await import('./routes/portal/app/data');
-                return { Component: AppDataRoute };
-              },
-            },
-            {
-              path: 'design',
-              lazy: async () => {
-                const { AppDesignRoute } = await import('./routes/portal/app/design');
-                return { Component: AppDesignRoute };
-              },
-            }
-          ],
-        },
+
         {
           path: 'apps',
           lazy: async () => {

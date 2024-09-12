@@ -63,7 +63,7 @@ export const AppsList = () => {
           Cell({ entry: { id } }) {
             return (
               <div className="flex items-center gap-4">
-                <Link to={`/portal/app/${id}`}>View</Link>
+                <Link to={`/app/${id}`}>View</Link>
                 <DeleteApp id={id} />
 
               </div>

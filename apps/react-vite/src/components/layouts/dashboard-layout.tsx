@@ -24,7 +24,7 @@ type SideNavigationItem = {
   icon: string;
 };
 
-const Logo = () => {
+export const Logo = () => {
   return (
     <Link className="flex items-center text-white" to="/">
       <img className="h-8 w-auto" src={logo} alt="Workflow" />
@@ -33,7 +33,7 @@ const Logo = () => {
   );
 };
 
-const Progress = () => {
+export const Progress = () => {
   const { state, location } = useNavigation();
 
   const [progress, setProgress] = useState(0);

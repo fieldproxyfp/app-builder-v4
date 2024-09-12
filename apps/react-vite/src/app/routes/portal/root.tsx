@@ -5,7 +5,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layouts';
 import { Spinner } from '@/components/ui/spinner';
 
-export const AppRoot = () => {
+export const PortalRoot = () => {
   const location = useLocation();
   return (
     <DashboardLayout>

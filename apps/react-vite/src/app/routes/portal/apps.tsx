@@ -10,14 +10,7 @@ export const AppsRoute = () => {
       </div>
       <div className="mt-4">
         <AppsList />
-        {/* <DiscussionsList
-          onDiscussionPrefetch={(id) => {
-            // Prefetch the comments data when the user hovers over the link in the list
-            queryClient.prefetchInfiniteQuery(
-              getInfiniteCommentsQueryOptions(id),
-            );
-          }}
-        /> */}
+
       </div>
     </ContentLayout>
   );
