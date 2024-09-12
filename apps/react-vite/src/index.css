@@ -6,16 +6,16 @@
   :root {
  
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 240 45% 9%;
 
-    --backgound-1: 240 100% 99%;
-    --backgound-1-foreground: 240 100% 9%;
+    --backgound-grey: 240 100% 99%;
+    --backgound-grey-foreground: 0 0% 44%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 0 0% 44%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 0 0% 44%;
 
     --primary: 200 100% 5%;
     --primary-foreground: 210 40% 98%;
@@ -29,11 +29,14 @@
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 354 81% 51%;
+    --destructive-foreground: 0 100% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --success: 135 69% 35%;
+    --success-foreground: 0 100% 100%;
+
+    --border: 0 0% 93%;
+    --input: 0 0% 84%; 
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
@@ -45,27 +48,24 @@
     --brand-3: 30 100% 93%;
     --brand-3-foreground: 200 100% 5%;
 
-    --border1: 0 0% 93%;
-    --border-2: 0 0% 84%;
-    --border-3: 0 0% 31%;
+    --border-primary: 0 0% 93%;
+    --border-secondary: 0 0% 84%;
+    --border-dark: 0 0% 31%;
 
-    --gray-10: 0 0% 68%;
-    --gray-20: 0 0% 54%;
-    --gray-30: 0 0% 44%;
-    --gray-40: 0 0% 37%;
-    --gray-display:180 3% 23%;
+    --gray-muted: 0 0% 68%;
+    --gray-body: 0 0% 54%;
+    --gray-paragraph: 0 0% 44%;
+    --gray-subtitle: 0 0% 37%;
+    --gray-title:180 3% 23%;
 
-    --red-1: 0 100% 98%;
-    --red-1-foreground: 354 81% 51%;
-    --red-2: 354 81% 51%;
-    --red-2-foreground: 0 0% 100%;
+    --accent-green: 114 57% 43%;
+    --accent-yellow: 51 100% 50%;
+    --accent-orange: 20 100% 60%;
+    --accent-red: 354 81% 51%;
+    --accent-pink: 329 100% 62%;
+    --accent-purple: 272 73% 67%;
+    --accent-blue: 216 100% 55%;
 
-    --green-1: 80 100% 94%;
-    --green-1-foreground: 80 100% 94%;
-    --green-2: 114 57% 43%;
-    --green-2-foreground: 0 0% 100%;
-    --green-3: 130 81% 23%;
-    --green-3-foreground: 0 0% 100%;
   }
 
   .dark {

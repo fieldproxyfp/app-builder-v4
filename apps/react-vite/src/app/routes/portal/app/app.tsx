@@ -7,7 +7,7 @@ export const AppRoute = () => {
 
     return (
         <div className="size-full flex flex-col flex-grow ">
-            <header className=" h-14 bg-red-400 flex justify-between items-center">
+            <header className=" h-14 bg-background flex justify-between items-center border-b-[1px] border-border1">
 
             </header>
             <main className="flex flex-col flex-grow p-2">
