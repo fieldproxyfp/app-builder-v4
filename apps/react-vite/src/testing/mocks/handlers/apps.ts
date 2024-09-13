@@ -81,4 +81,20 @@ export const appsHandlers = [
             );
         }
     }),
+
+    http.get(`${env.API_URL}/app/:id/meta`, async ({ params }) => {
+        await networkDelay();
+        try {
+            const appId = params.id as string;
+            const result = db.app.findFirst({
+                where: { id: { equals: appId } },
+            });
+            return HttpResponse.json(result);
+        } catch (error: any) {
+            return HttpResponse.json(
+                { message: error?.message || 'Server Error' },
+                { status: 500 },
+            );
+        }
+    }),
 ]

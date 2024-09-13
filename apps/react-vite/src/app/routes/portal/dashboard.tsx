@@ -15,6 +15,7 @@ export const DashboardRoute = () => {
     );
     console.log({ response });
   };
+
   return (
     <ContentLayout title="Dashboard" >
       <h1 className="text-xl">

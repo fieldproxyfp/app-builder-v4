@@ -1,5 +1,3 @@
-import { Plus } from 'lucide-react';
-
 import { Button } from '@/components/ui/button';
 import { Form, FormDrawer, Input, Textarea } from '@/components/ui/form';
 import { useNotifications } from '@/components/ui/notifications';
@@ -46,7 +44,7 @@ export const CreateApp = () => {
     <FormDrawer
       isDone={createAppMutation.isSuccess}
       triggerButton={
-        <Button size="sm" icon={<Plus className="size-4" />}>
+        <Button size="sm" icon="add">
           Create App
         </Button>
       }

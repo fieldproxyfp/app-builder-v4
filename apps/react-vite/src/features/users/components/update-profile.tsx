@@ -1,5 +1,3 @@
-import { Pen } from 'lucide-react';
-
 import { Button } from '@/components/ui/button';
 import { Form, FormDrawer, Input, Textarea } from '@/components/ui/form';
 import { useNotifications } from '@/components/ui/notifications';
@@ -28,7 +26,7 @@ export const UpdateProfile = () => {
     <FormDrawer
       isDone={updateProfileMutation.isSuccess}
       triggerButton={
-        <Button icon={<Pen className="size-4" />} size="sm">
+        <Button icon="edit" size="sm">
           Update Profile
         </Button>
       }
@@ -53,7 +51,7 @@ export const UpdateProfile = () => {
           defaultValues: {
             firstName: user.data?.firstName ?? '',
             lastName: user.data?.lastName ?? '',
-            email: user.data?.email ?? '',
+            email: user.data?.emailId ?? '',
             bio: user.data?.bio ?? '',
           },
         }}

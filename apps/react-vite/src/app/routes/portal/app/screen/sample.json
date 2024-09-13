@@ -1,0 +1,642 @@
+{
+  "app_id": "2",
+  "views": {
+    "1": {
+      "label": "Visit Information",
+      "data": {
+        "jobs": "select * from commisioning_master where assigned_service_engineer = '<!getUserId()!>' and job_status != 'Completed'"
+      },
+      "margin": {
+        "left": 16,
+        "right": 16,
+        "top": 20,
+        "bottom": 60
+      },
+      "ui": [
+        {
+          "element_id": "2",
+          "type": "list",
+          "data": "jobs.data",
+          "ui": [
+            {
+              "element_id": "2_25",
+              "type": "card",
+              "ui": [
+                {
+                  "element_id": "2_26",
+                  "type": "container",
+                  "border_radius": 12,
+                  "ui": [
+                    {
+                      "element_id": "2_27",
+                      "type": "container",
+                      "color": "#F5FFE2",
+                      "padding_left": 12,
+                      "padding_right": 12,
+                      "padding_bottom": 16,
+                      "padding_top": 12,
+                      "border_radius": 12,
+                      "ui": [
+                        {
+                          "element_id": "2_7",
+                          "type": "container",
+                          "border_radius": 80,
+                          "visibility_condition": "'{{jobs.data.[index].job_status}}' == 'Started'",
+                          "color": "#3BAB2F",
+                          "padding_left": 8,
+                          "padding_right": 8,
+                          "margin_left": 8,
+                          "margin_bottom": 4,
+                          "ui": [
+                            {
+                              "element_id": "2_7",
+                              "type": "text",
+                              "color": "#FFFFFF",
+                              "text": "{{jobs.data.[index].job_status}}"
+                            }
+                          ]
+                        },
+                        {
+                          "element_id": "2_28",
+                          "type": "row",
+                          "ui": [
+                            {
+                              "element_id": "2_10",
+                              "type": "container",
+                              "width": 2,
+                              "height": 50,
+                              "color": "#3BAB2F",
+                              "margin_right": 8
+                            },
+                            {
+                              "element_id": "2_4",
+                              "type": "column",
+                              "expanded": true,
+                              "ui": [
+                                {
+                                  "element_id": "2_29",
+                                  "type": "text",
+                                  "text": "{{jobs.data.[index].company_name}}"
+                                },
+                                {
+                                  "element_id": "2_30",
+                                  "type": "date_time",
+                                  "convert_to_local": true,
+                                  "format": "dd/MM/yyyy",
+                                  "text": "{{jobs.data.[index].scheduled_visit_date}}"
+                                }
+                              ]
+                            },
+                            {
+                              "element_id": "2_15",
+                              "type": "container",
+                              "margin_right": 16,
+                              "ui": [
+                                {
+                                  "element_id": "2_8",
+                                  "type": "button",
+                                  "btn_type": "icon_button",
+                                  "icon": "x",
+                                  "bg_color": "#CB0707"
+                                }
+                              ]
+                            },
+                            {
+                              "element_id": "2_8",
+                              "type": "button",
+                              "btn_type": "icon_button",
+                              "icon": "check",
+                              "bg_color": "#3BAB2F"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "element_id": "2_27",
+                      "type": "container",
+                      "padding_left": 12,
+                      "padding_right": 12,
+                      "ui": [
+                        {
+                          "element_id": "2_31",
+                          "type": "row",
+                          "ui": [
+                            {
+                              "element_id": "2_32",
+                              "type": "text",
+                              "text": "Pre-Commisioning PDF"
+                            },
+                            {
+                              "element_id": "2_33",
+                              "type": "button",
+                              "btn_type": "text_button",
+                              "text": "View PDF",
+                              "onclick": {
+                                "1": {
+                                  "type": "navigation",
+                                  "async": false,
+                                  "navigation_type": "url",
+                                  "url": "{{jobs.data.[index].pre_commissioning_pdf}}",
+                                  "is_pdf": true
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "onclick": {
+            "1": {
+              "type": "navigation",
+              "async": false,
+              "view_id": "2",
+              "app_id": "2",
+              "arguments": {
+                "job_id": "{{jobs.data.[index].job_id}}",
+                "order_id": "{{jobs.data.[index].order_id}}"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "2": {
+      "label": "Job Details",
+      "data": {
+        "users": "select * from users where \"userId\" != '<!getUserId()!>'"
+      },
+      "margin": {
+        "left": 16,
+        "right": 16,
+        "top": 20,
+        "bottom": 60
+      },
+      "ui": [
+        {
+          "element_id": "3",
+          "type": "input",
+          "input_type": "dropdown",
+          "label": "Accept Job",
+          "required": true,
+          "data": ["Yes", "No"]
+        },
+        {
+          "element_id": "4",
+          "type": "input",
+          "input_type": "dropdown",
+          "label": "Assign User",
+          "data": "users.data",
+          "show": ["userId", "userName"],
+          "show_key": false,
+          "is_visible": false,
+          "visibility_condition": "' {{input_data.3.[index]}} ' = ' No '"
+        },
+        {
+          "element_id": "5",
+          "type": "button",
+          "btn_type": "filled_button",
+          "text": "Next",
+          "check_required": true,
+          "onclick": {
+            "1": {
+              "type": "execute_query",
+              "query": "update commisioning_master set job_acceptance = '{{input_data.3.[index]}}' where job_id = '{{arguments.job_id}}'"
+            },
+            "2": {
+              "type": "execute_query",
+              "query": "update job_master set assigned_service_engineer = '{{input_data.4.[index]}}' where order_id = '{{arguments.job_id}}'",
+              "condition": {
+                "type": "expression",
+                "condition": "'{{input_data.3.[index]}}' == 'No'"
+              }
+            },
+            "3": {
+              "type": "navigation",
+              "view_id": "3",
+              "app_id": "2",
+              "arguments": {
+                "job_id": "{{arguments.job_id}}",
+                "order_id": "{{arguments.order_id}}"
+              },
+              "replace": true,
+              "condition": {
+                "type": "expression",
+                "condition": "'{{input_data.3.[index]}}' == 'Yes'"
+              }
+            },
+            "4": {
+              "type": "navigation",
+              "back": true,
+              "arguments": {
+                "refresh": ["jobs"]
+              },
+              "condition": {
+                "type": "expression",
+                "condition": "'{{input_data.3.[index]}}' == 'No'"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "3": {
+      "label": "Site Check In",
+      "data": {},
+      "margin": {
+        "left": 16,
+        "right": 16,
+        "top": 20,
+        "bottom": 60
+      },
+      "ui": [
+        {
+          "element_id": "1",
+          "type": "input",
+          "input_type": "text",
+          "label": "Contact Person",
+          "required": true
+        },
+        {
+          "element_id": "2",
+          "type": "input",
+          "input_type": "phone",
+          "label": "Contact Number",
+          "country_code": "IN",
+          "required": true
+        },
+        {
+          "element_id": "3",
+          "type": "input",
+          "input_type": "text",
+          "label": "Designation",
+          "required": true
+        },
+        {
+          "element_id": "4",
+          "type": "input",
+          "input_type": "email",
+          "label": "Email",
+          "required": true
+        },
+        {
+          "element_id": "5",
+          "type": "button",
+          "btn_type": "filled_button",
+          "text": "Next",
+          "check_required": true,
+          "onclick": {
+            "1": {
+              "type": "execute_query",
+              "query": "update commisioning_master set contact_person_ = '{{input_data.1.[index]}}', designation_='{{input_data.3.[index]}}', mobile_no='{{input_data.2.[index]}}', email_address='{{input_data.4.[index]}}', visit_date=CURRENT_DATE, job_status='Started', checkin_datetime=CURRENT_TIMESTAMP where job_id = '{{arguments.job_id}}'"
+            },
+            "2": {
+              "type": "navigation",
+              "async": false,
+              "view_id": "4",
+              "app_id": "2",
+              "arguments": {
+                "job_id": "{{arguments.job_id}}",
+                "order_id": "{{arguments.order_id}}"
+              },
+              "replace": true
+            }
+          }
+        }
+      ]
+    },
+    "4": {
+      "label": "Machine Details",
+      "data": {
+        "machines": "select * from \"catalogueJvMDJFe-line-items\" where \"col-catalogueJvMDJFe-orderId\" = '{{arguments.order_id}}'"
+      },
+      "margin": {
+        "left": 16,
+        "right": 16,
+        "top": 20,
+        "bottom": 60
+      },
+      "ui": [
+        {
+          "element_id": "1",
+          "type": "list",
+          "data": "machines.data",
+          "ui": [
+            {
+              "element_id": "2_25",
+              "type": "card",
+              "ui": [
+                {
+                  "element_id": "2_26",
+                  "type": "container",
+                  "border_radius": 12,
+                  "ui": [
+                    {
+                      "element_id": "2_27",
+                      "type": "container",
+                      "color": "#FFF6F6",
+                      "padding_left": 12,
+                      "padding_right": 12,
+                      "padding_bottom": 16,
+                      "padding_top": 12,
+                      "border_radius": 12,
+                      "ui": [
+                        {
+                          "element_id": "2_28",
+                          "type": "row",
+                          "ui": [
+                            {
+                              "element_id": "2_10",
+                              "type": "container",
+                              "width": 2,
+                              "height": 24,
+                              "color": "#393C3C",
+                              "margin_right": 8
+                            },
+                            {
+                              "element_id": "2_29",
+                              "type": "text",
+                              "text": "{{machines.data.[index].col-catalogueJvMDJFe-line-items-productName}}"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "element_id": "2_30",
+                      "type": "container",
+                      "padding_left": 12,
+                      "padding_right": 12,
+                      "padding_bottom": 16,
+                      "padding_top": 12,
+                      "ui": [
+                        {
+                          "element_id": "2_1",
+                          "type": "text",
+                          "text": "SKU: {{machines.data.[index].col-catalogueJvMDJFe-line-items-sku}}"
+                        },
+                        {
+                          "element_id": "2_3",
+                          "type": "text",
+                          "text": "Product Description: {{machines.data.[index].col-catalogueJvMDJFe-line-items-productDescription}}"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "onclick": {
+            "1": {
+              "type": "navigation",
+              "async": false,
+              "view_id": "5",
+              "app_id": "2",
+              "arguments": {
+                "order_id": "{{arguments.order_id}}",
+                "machine_id": "{{machines.data.[index].col-catalogueJvMDJFe-line-items-sku}}"
+              }
+            }
+          }
+        },
+        {
+          "element_id": "5",
+          "type": "button",
+          "btn_type": "filled_button",
+          "text": "Next",
+          "onclick": {
+            "2": {
+              "type": "navigation",
+              "async": false,
+              "view_id": "6",
+              "app_id": "2",
+              "arguments": {
+                "job_id": "{{arguments.job_id}}",
+                "order_id": "{{arguments.order_id}}"
+              },
+              "replace": true
+            }
+          }
+        }
+      ]
+    },
+    "5": {
+      "label": "Machine Details",
+      "data": {
+        "machine_details": "select * from machine_master where machine_id = '{{arguments.machine_id}}'"
+      },
+      "margin": {
+        "left": 16,
+        "right": 16,
+        "top": 20,
+        "bottom": 60
+      },
+      "ui": [
+        {
+          "type": "container",
+          "element_id": "con1",
+          "margin_bottom": 16,
+          "ui": [
+            {
+              "element_id": "1",
+              "type": "text",
+              "text": "Make: {{machine_details.data.[0].type_of_make}}"
+            },
+            {
+              "element_id": "2",
+              "type": "text",
+              "text": "Machine: {{machine_details.data.[0].machine_type}}"
+            },
+            {
+              "element_id": "3",
+              "type": "text",
+              "text": "Model: {{machine_details.data.[0].model}}"
+            }
+          ]
+        },
+        {
+          "element_id": "4",
+          "type": "input",
+          "input_type": "text",
+          "label": "Part Number",
+          "required": true
+        },
+        {
+          "element_id": "5",
+          "type": "input",
+          "input_type": "text",
+          "label": "Serial Number",
+          "required": true
+        },
+        {
+          "element_id": "6",
+          "type": "input",
+          "input_type": "text",
+          "label": "Year of Manufacture",
+          "required": true
+        },
+        {
+          "element_id": "7",
+          "type": "input",
+          "input_type": "text",
+          "label": "Compressor Air Line Connection",
+          "required": true,
+          "is_visible": false,
+          "visibility_condition": "' {{machine_details.data.[0].machine_type}} ' = ' Dryer ' OR ' {{machine_details.data.[0].machine_type}} ' = ' Air Compressor '"
+        },
+        {
+          "element_id": "btn1",
+          "type": "button",
+          "btn_type": "filled_button",
+          "check_required": true,
+          "text": "Next",
+          "onclick": {
+            "2": {
+              "type": "navigation",
+              "back": true,
+              "arguments": {}
+            }
+          }
+        }
+      ]
+    },
+    "6": {
+      "label": "Commisioning PDF",
+      "data": {},
+      "margin": {
+        "bottom": 32,
+        "top": 16,
+        "left": 16,
+        "right": 16
+      },
+      "onload": {
+        "1": {
+          "type": "api",
+          "api_type": "POST",
+          "url": "https://webapi.fieldproxy.com/v4/public/proxy-3110190e-7a38-47ae-8fd2-90ad1c94b94c",
+          "headers": {
+            "Content-Type": "application/json"
+          }
+        },
+        "2": {
+          "type": "api",
+          "is_pdf": true,
+          "api_type": "POST",
+          "url": "https://webapi.fieldproxy.com/v4/excel/parseExcel",
+          "headers": {
+            "Content-Type": "application/json",
+            "x-anon-token": "{{functions.1.data.token}}"
+          },
+          "body": {
+            "dynamicObj": {
+              "ticketid": "{{arguments.job_id}}"
+            },
+            "excelFileLink": "https://f004.backblazeb2.com/file/fieldproxy/pneumatic12082024_1203_pneumatic29072024_1051_pneumatic12072024_1032_test_competent_pneumatic.xlsx"
+          }
+        }
+      },
+      "ui": [
+        {
+          "element_id": "1",
+          "type": "pdf",
+          "label": "Pre-Commisioning PDF",
+          "height": 0.75,
+          "link": "",
+          "bytes": "functions.2"
+        },
+        {
+          "element_id": "2",
+          "type": "input",
+          "input_type": "signature",
+          "label": "Customer Signature",
+          "required": true,
+          "required_condition": "' {{input_data.5.[index].[0]}} ' = ' No '"
+        },
+        {
+          "element_id": "3",
+          "type": "input",
+          "input_type": "text",
+          "label": "Contact Name",
+          "required": true,
+          "required_condition": "' {{input_data.5.[index].[0]}} ' = ' No '"
+        },
+        {
+          "element_id": "4",
+          "type": "input",
+          "input_type": "phone",
+          "label": "Contact Number",
+          "country_code": "IN",
+          "required": true,
+          "required_condition": "' {{input_data.5.[index].[0]}} ' = ' No '"
+        },
+        {
+          "element_id": "5",
+          "type": "input",
+          "input_type": "mcq",
+          "label": "Do you have to visit this site again for verification?",
+          "is_multi": false,
+          "data": ["Yes", "No"]
+        },
+        {
+          "element_id": "6",
+          "type": "input",
+          "input_type": "date",
+          "format": "date",
+          "label": "Visit Date",
+          "is_visible": false,
+          "visibility_condition": "' {{input_data.5.[index].[0]}} ' = ' Yes '",
+          "required": true,
+          "required_condition": "' {{input_data.5.[index].[0]}} ' = ' Yes '"
+        },
+        {
+          "element_id": "7",
+          "type": "input",
+          "input_type": "date",
+          "label": "Set Reminder for Commisioning Visit to happen after N days",
+          "is_visible": false,
+          "visibility_condition": "' {{input_data.5.[index].[0]}} ' = ' No '",
+          "required": true,
+          "required_condition": "' {{input_data.5.[index].[0]}} ' = ' No '"
+        },
+        {
+          "element_id": "8",
+          "type": "button",
+          "btn_type": "filled_button",
+          "check_required": true,
+          "text": "Submit",
+          "onclick": {
+            "1": {
+              "type": "execute_query",
+              "condition": {
+                "type": "expression",
+                "condition": "'{{input_data.5.[index].[0]}}' == 'Yes'"
+              },
+              "query": "update job_master set job_status = 'Rescheduled', rescheduled_date='{{input_data.6.[index]}}', visit_rescheduled='Yes', scheduled_visit_date='{{input_data.6.[index]}}' where order_id = '{{arguments.order_id}}'"
+            },
+            "2": {
+              "type": "execute_query",
+              "query": "update job_master set customer_verification = '{{input_data.2.[index]}}', name_of_person_met = '{{input_data.3.[index]}}',contact_of_person_met = '{{input_data.4.[index]}}',reminder_notification = '{{input_data.7.[index]}}',job_status = 'Completed',visit_rescheduled='No' where order_id = '{{arguments.order_id}}'",
+              "condition": {
+                "type": "expression",
+                "condition": "'{{input_data.5.[index].[0]}}' == 'No'"
+              }
+            },
+            "3": {
+              "type": "navigation",
+              "back": true,
+              "arguments": {
+                "refresh": ["jobs"]
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

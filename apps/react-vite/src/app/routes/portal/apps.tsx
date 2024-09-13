@@ -10,7 +10,6 @@ export const AppsRoute = () => {
       </div>
       <div className="mt-4">
         <AppsList />
-
       </div>
     </ContentLayout>
   );

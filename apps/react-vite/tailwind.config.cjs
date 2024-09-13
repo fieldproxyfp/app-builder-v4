@@ -14,20 +14,50 @@ module.exports = {
       },
     },
     extend: {
-      fontFamily: { 
-        sans: ['Poppins', ...defaultTheme.fontFamily.sans],      
+      fontFamily: {
+        sans: ['Poppins', ...defaultTheme.fontFamily.sans],
       },
       fontSize: {
-        'display': ['40px', { lineHeight: '56px', letterSpacing: '0', fontWeight: '600' }],
-        'h1': ['32px', { lineHeight: '40px', letterSpacing: '-0.01em', fontWeight: '600' }],
-        'h2': ['24px', { lineHeight: '30px', letterSpacing: '-0.01em', fontWeight: '600' }],
-        'h3': ['20px', { lineHeight: '28px', letterSpacing: '-0.02em', fontWeight: '600' }],
-        'subheading': ['16px', { lineHeight: '24px', letterSpacing: '-0.01em', fontWeight: '500' }],
-        'large': ['16px', { lineHeight: '20px', letterSpacing: '-0.01em', fontWeight: '400' }],
-        'body': ['14px', { lineHeight: '20px', letterSpacing: '-0.01em', fontWeight: '500' }],
-        'small': ['12px', { lineHeight: '16px', letterSpacing: '-0.01em', fontWeight: '500' }],
-        'button': ['14px', { lineHeight: '20px', letterSpacing: '0', fontWeight: '500' }],
-        'button-small': ['12px', { lineHeight: '20px', letterSpacing: '-0.01em', fontWeight: '600' }],
+        display: [
+          '40px',
+          { lineHeight: '56px', letterSpacing: '0', fontWeight: '600' },
+        ],
+        h1: [
+          '32px',
+          { lineHeight: '40px', letterSpacing: '-0.01em', fontWeight: '600' },
+        ],
+        h2: [
+          '24px',
+          { lineHeight: '30px', letterSpacing: '-0.01em', fontWeight: '600' },
+        ],
+        h3: [
+          '20px',
+          { lineHeight: '28px', letterSpacing: '-0.02em', fontWeight: '600' },
+        ],
+        subheading: [
+          '16px',
+          { lineHeight: '24px', letterSpacing: '-0.01em', fontWeight: '500' },
+        ],
+        large: [
+          '16px',
+          { lineHeight: '20px', letterSpacing: '-0.01em', fontWeight: '400' },
+        ],
+        body: [
+          '14px',
+          { lineHeight: '20px', letterSpacing: '-0.01em', fontWeight: '500' },
+        ],
+        small: [
+          '12px',
+          { lineHeight: '16px', letterSpacing: '-0.01em', fontWeight: '500' },
+        ],
+        button: [
+          '14px',
+          { lineHeight: '20px', letterSpacing: '0', fontWeight: '500' },
+        ],
+        'button-small': [
+          '12px',
+          { lineHeight: '20px', letterSpacing: '-0.01em', fontWeight: '600' },
+        ],
       },
       colors: {
         border: 'hsl(var(--border))',
@@ -69,7 +99,7 @@ module.exports = {
         accentPink: 'hsl(var(--accent-pink))',
         accentPurple: 'hsl(var(--accent-purple))',
         accentBlue: 'hsl(var(--accent-blue))',
-        
+
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
@@ -97,7 +127,7 @@ module.exports = {
         card: {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
-        }, 
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -120,11 +150,13 @@ module.exports = {
       },
     },
   },
-  plugins: [require('tailwindcss-animate'), require('@tailwindcss/typography'),
-    plugin(function({ addUtilities, theme, e }) {
+  plugins: [
+    require('tailwindcss-animate'),
+    require('@tailwindcss/typography'),
+    plugin(function ({ addUtilities, theme, e }) {
       const responsiveTypography = {};
       const fontSizes = theme('fontSize');
-      
+
       Object.entries(fontSizes).forEach(([key, value]) => {
         const [fontSize, { lineHeight, letterSpacing, fontWeight }] = value;
         responsiveTypography[`.${e(`font-responsive-${key}`)}`] = {
@@ -136,6 +168,6 @@ module.exports = {
       });
 
       addUtilities(responsiveTypography, ['responsive']);
-    })
+    }),
   ],
 };

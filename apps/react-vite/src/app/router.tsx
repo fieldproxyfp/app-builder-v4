@@ -35,7 +35,7 @@ export const createAppRouter = (queryClient: QueryClient) =>
       },
     },
     {
-      path: "/app",
+      path: '/app',
       element: (
         <ProtectedRoute>
           <AppRoot />
@@ -52,38 +52,44 @@ export const createAppRouter = (queryClient: QueryClient) =>
             {
               path: ':screenId',
               lazy: async () => {
-                const { ScreenRoute } = await import('./routes/portal/app/screen');
+                const { ScreenRoute } = await import(
+                  './routes/portal/app/screen'
+                );
                 return { Component: ScreenRoute };
               },
               children: [
                 {
-                  path: 'settings',
+                  path: 'actions',
                   lazy: async () => {
-                    const { PageActions: AppSettingsRoute } = await import('./routes/portal/app/screen/actions');
+                    const { PageActions: AppSettingsRoute } = await import(
+                      './routes/portal/app/screen/actions'
+                    );
                     return { Component: AppSettingsRoute };
                   },
                 },
                 {
                   path: 'data',
                   lazy: async () => {
-                    const { AppDataRoute } = await import('./routes/portal/app/screen/data');
+                    const { AppDataRoute } = await import(
+                      './routes/portal/app/screen/data'
+                    );
                     return { Component: AppDataRoute };
                   },
                 },
                 {
                   path: 'design',
                   lazy: async () => {
-                    const { AppDesignRoute } = await import('./routes/portal/app/screen/design');
+                    const { AppDesignRoute } = await import(
+                      './routes/portal/app/screen/design'
+                    );
                     return { Component: AppDesignRoute };
                   },
-                }
-              ]
-
+                },
+              ],
             },
-
           ],
         },
-      ]
+      ],
     },
     {
       path: '/portal',
@@ -96,7 +102,9 @@ export const createAppRouter = (queryClient: QueryClient) =>
         {
           path: '',
           lazy: async () => {
-            const { DashboardRoute } = await import('./routes/portal/dashboard');
+            const { DashboardRoute } = await import(
+              './routes/portal/dashboard'
+            );
             return { Component: DashboardRoute };
           },
         },
@@ -158,7 +166,6 @@ export const createAppRouter = (queryClient: QueryClient) =>
             return { Component: ProfileRoute };
           },
         },
-
       ],
     },
     {

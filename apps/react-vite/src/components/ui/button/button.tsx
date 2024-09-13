@@ -8,7 +8,7 @@ import { Spinner } from '../spinner';
 import { Typography } from '../typography/typography';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center w-fit whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
@@ -22,6 +22,8 @@ const buttonVariants = cva(
           'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground  text-primary ',
         link: 'text-primary underline-offset-4 hover:underline',
+        positive:
+          'bg-accentGreen text-primary-foreground shadow-sm hover:bg-accentGreen/80',
       },
       size: {
         default: 'h-9 px-4 py-2',
@@ -41,7 +43,7 @@ export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
     isLoading?: boolean;
-    icon?: React.ReactNode;
+    icon?: string;
   };
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -65,9 +67,20 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         {...props}
       >
-        {isLoading && <Spinner size="sm" className="text-current" />}
-        {!isLoading && icon && <span className="mr-2">{icon}</span>}
-        <Typography variant={size === "sm" ? "buttonSmall" : 'button'} className="mx-2">{children}</Typography>
+        <React.Fragment>
+          {isLoading && <Spinner size="sm" className="text-current" />}
+          {!isLoading && icon && (
+            <span className="material-icons-round text-lg">{icon}</span>
+          )}
+          {size !== 'icon' && (
+            <Typography
+              variant={size === 'sm' ? 'buttonSmall' : 'button'}
+              className="mx-2"
+            >
+              {children}
+            </Typography>
+          )}
+        </React.Fragment>
       </Comp>
     );
   },
@@ -75,4 +88,3 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = 'Button';
 
 export { Button, buttonVariants };
-

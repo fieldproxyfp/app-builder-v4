@@ -117,7 +117,6 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               >
                 {item.icon}
               </span>
-              <item.icon aria-hidden="true" />
               {item.name}
             </NavLink>
           ))}
@@ -157,7 +156,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                     <span
                       className={cn(
                         'text-gray-400 group-hover:text-gray-300',
-                        'mr-4 size-6 shrink-0 material-icons-outlined',
+                        'mr-4 size-6 shrink-0 material-icons-round',
                       )}
                       aria-hidden="true"
                     >

@@ -38,7 +38,7 @@ export const ProfileRoute = () => {
           <dl className="sm:divide-y sm:divide-gray-200">
             <Entry label="First Name" value={user.data.firstName} />
             <Entry label="Last Name" value={user.data.lastName} />
-            <Entry label="Email Address" value={user.data.email} />
+            <Entry label="Email Address" value={user.data.emailId} />
             <Entry label="Role" value={user.data.role} />
             <Entry label="Bio" value={user.data.bio} />
           </dl>
