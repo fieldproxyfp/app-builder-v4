@@ -24,9 +24,9 @@ export function createScreen(label: string): Screen {
 }
 
 // Helper function to add a data query to a screen
-export function addDataQuery(app: App, screenId: string, queryName: string, sqlQuery: string): App {
+export function addDataQuery(app: App, view_id: string, queryName: string, sqlQuery: string): App {
     const compiledApp = JSON.parse(app.compiledJSON) as CompiledApp;
-    compiledApp.views[screenId].data[queryName] = sqlQuery;
+    compiledApp.views[view_id].data[queryName] = sqlQuery;
     return {
         ...app,
         compiledJSON: JSON.stringify(compiledApp),
@@ -34,9 +34,9 @@ export function addDataQuery(app: App, screenId: string, queryName: string, sqlQ
 }
 
 // Helper function to add an action to a widget
-export function addAction(app: App, screenId: string, widgetId: string, eventType: string, action: Action): App {
+export function addAction(app: App, view_id: string, widgetId: string, eventType: string, action: Action): App {
     const compiledApp = JSON.parse(app.compiledJSON) as CompiledApp;
-    const widget = compiledApp.views[screenId].ui.find(w => w.element_id === widgetId);
+    const widget = compiledApp.views[view_id].ui.find(w => w.element_id === widgetId);
     if (widget) {
         if (!widget.onclick) {
             widget.onclick = {};
@@ -52,26 +52,26 @@ export function addAction(app: App, screenId: string, widgetId: string, eventTyp
 
 // Implementation of DragDropManager
 export const dragDropManager: DragDropManager = {
-    addWidget(app: App, screenId: string, widget: Widget, position: number): App {
+    addWidget(app: App, view_id: string, widget: Widget, position: number): App {
         const compiledApp = JSON.parse(app.compiledJSON) as CompiledApp;
-        compiledApp.views[screenId].ui.splice(position, 0, widget);
+        compiledApp.views[view_id].ui.splice(position, 0, widget);
         return {
             ...app,
             compiledJSON: JSON.stringify(compiledApp),
         };
     },
-    removeWidget(app: App, screenId: string, widgetId: string): App {
+    removeWidget(app: App, view_id: string, widgetId: string): App {
         const compiledApp = JSON.parse(app.compiledJSON) as CompiledApp;
-        compiledApp.views[screenId].ui = compiledApp.views[screenId].ui.filter(w => w.element_id !== widgetId);
+        compiledApp.views[view_id].ui = compiledApp.views[view_id].ui.filter(w => w.element_id !== widgetId);
         return {
             ...app,
             compiledJSON: JSON.stringify(compiledApp),
         };
     },
-    reorderWidgets(app: App, screenId: string, oldIndex: number, newIndex: number): App {
+    reorderWidgets(app: App, view_id: string, oldIndex: number, newIndex: number): App {
         const compiledApp = JSON.parse(app.compiledJSON) as CompiledApp;
-        const [widget] = compiledApp.views[screenId].ui.splice(oldIndex, 1);
-        compiledApp.views[screenId].ui.splice(newIndex, 0, widget);
+        const [widget] = compiledApp.views[view_id].ui.splice(oldIndex, 1);
+        compiledApp.views[view_id].ui.splice(newIndex, 0, widget);
         return {
             ...app,
             compiledJSON: JSON.stringify(compiledApp),
@@ -158,9 +158,9 @@ function findAndUpdateWidget(widgets: Widget[], widgetId: string, properties: Pa
 }
 
 // Updated function to update widget properties
-export function updateWidgetProperties(app: App, screenId: string, widgetId: string, properties: Partial<Widget>): App {
+export function updateWidgetProperties(app: App, view_id: string, widgetId: string, properties: Partial<Widget>): App {
     const compiledApp = JSON.parse(app.compiledJSON) as CompiledApp;
-    const screen = compiledApp.views[screenId];
+    const screen = compiledApp.views[view_id];
 
     if (screen && screen.ui) {
         if (findAndUpdateWidget(screen.ui, widgetId, properties)) {

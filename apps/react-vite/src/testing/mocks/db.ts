@@ -1,5 +1,14 @@
-import { factory, primaryKey } from '@mswjs/data';
+import { factory, nullable, primaryKey } from '@mswjs/data';
 import { nanoid } from 'nanoid';
+
+type screen = {
+  view_id: String
+  appId: String,
+  label: String,
+  data: Object, // To represent { [key: string]: string }
+  margin: Object, // To represent the margin object
+  ui: Array<any>, // To represent Widget[]
+}
 
 const models = {
   user: {
@@ -40,6 +49,16 @@ const models = {
     description: String,
     authorId: String,
     type: String,
+    views: Object(nullable(
+      {
+        view_id: String,
+        appId: String,
+        label: String,
+        data: Object, // To represent { [key: string]: string }
+        margin: Object, // To represent the margin object
+        ui: Array<any>,
+      }
+    ) || null),
     createdAt: Date.now,
   }
 };
@@ -107,3 +126,4 @@ export const initializeDb = async () => {
 export const resetDb = () => {
   window.localStorage.clear();
 };
+

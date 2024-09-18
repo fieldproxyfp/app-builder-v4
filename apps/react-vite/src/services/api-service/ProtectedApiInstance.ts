@@ -1,7 +1,7 @@
+import { env } from '@/config/env';
 import axios, { CancelTokenSource } from 'axios';
 import { appService } from '../appService';
 import { ApiResponseI } from './apiTypes';
-import { env } from '@/config/env';
 
 export type ErrorHandler<T> = (response: ApiResponseI<T>) => T | undefined;
 
@@ -70,7 +70,6 @@ export const getRequestDetails = async <T>(service: string, body?: object, optio
 		return { body, headers };
 	}
 	const result: string = await appService.getUpdatedToken();
-	console.log({ result })
 	const headers = {
 		[X_SERVICE_NAME]: service,
 		Authorization: `Bearer ${result}`,

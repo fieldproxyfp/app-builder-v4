@@ -17,7 +17,6 @@ const getUser = async () => {
 };
 
 const logout = (): Promise<void> => {
-  console.log('called logout');
   return Promise.resolve(appService.clear());
 };
 

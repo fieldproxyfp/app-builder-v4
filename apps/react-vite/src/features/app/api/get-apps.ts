@@ -1,21 +1,28 @@
 import { queryOptions, useQuery } from '@tanstack/react-query';
 
-import { api } from '@/lib/api-client';
+import API_END_POINTS from '@/constants/apiEndPoints';
 import { QueryConfig } from '@/lib/react-query';
-import { Meta } from '@/types/api';
+import { BackEndRequest } from '@/services/api-service/ProtectedApiInstance';
 import { AppT } from '@/types/app';
 
-export const getApps = (
+export const getApps = async (
     page = 1,
-): Promise<{
-    data: AppT[];
-    meta: Meta;
-}> => {
-    return api.get(`/app`, {
+): Promise<
+    AppT[]
+> => {
+    return BackEndRequest.Get<
+        { data: AppT[] }
+    >(API_END_POINTS.APPS.GET_APPS, {
         params: {
             page,
         },
-    });
+    }).then((res) => res.data).then((response) => {
+        if (!response.error) {
+            return response.data.data
+        } else {
+            throw new Error(response.message);
+        }
+    })
 };
 
 export const getAppsQueryOptions = ({

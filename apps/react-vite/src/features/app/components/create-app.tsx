@@ -63,7 +63,6 @@ export const CreateApp = () => {
       <Form
         id="create-app"
         onSubmit={(values) => {
-          console.log({ values });
           createAppMutation.mutate({ data: values });
         }}
         options={{ defaultValues }}

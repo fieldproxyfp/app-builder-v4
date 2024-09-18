@@ -2,12 +2,13 @@ import Axios, { InternalAxiosRequestConfig } from 'axios';
 
 import { useNotifications } from '@/components/ui/notifications';
 import { env } from '@/config/env';
+import { appService } from '@/services/appService';
 
 function authRequestInterceptor(config: InternalAxiosRequestConfig) {
   if (config.headers) {
     config.headers.Accept = 'application/json';
   }
-  
+
   config.withCredentials = false;
   return config;
 }
@@ -20,7 +21,7 @@ api.interceptors.request.use(authRequestInterceptor);
 api.interceptors.response.use(
   (response) => {
     return response.data;
-  }, 
+  },
   (error) => {
     const message = error.response?.data?.message || error.message;
     useNotifications.getState().addNotification({
@@ -30,6 +31,7 @@ api.interceptors.response.use(
     });
 
     if (error.response?.status === 401) {
+      appService.clear();
       const searchParams = new URLSearchParams();
       const redirectTo = searchParams.get('redirectTo');
       window.location.href = `/auth/login?redirectTo=${redirectTo}`;

@@ -3,6 +3,9 @@ import { HttpResponse, http } from 'msw';
 import { env } from '@/config/env';
 
 import { CreateAppInput } from '@/features/app/api/create-app';
+import { AppT } from '@/types/app';
+import { ViewI } from '@/types/screen';
+import { nanoid } from 'nanoid';
 import { db, persistDb } from '../db';
 import {
     networkDelay
@@ -11,10 +14,41 @@ import {
 export const appsHandlers = [
     http.post(`${env.API_URL}/app`, async ({ request }) => {
         await networkDelay();
-
         try {
             const data = (await request.json()) as CreateAppInput;
-            const result = db.app.create(data);
+            const homeScreen: Partial<ViewI> = {
+                view_id: nanoid(),
+                label: 'Home',
+                data: {},
+                ui: [],
+                margin: {
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    bottom: 0
+                }
+            }
+            const initApp: Partial<AppT> = {
+                ...data,
+                raw_data: {
+                    ...data,
+                    title: data.title || 'Untitled App',
+                    views: {
+                        "home": homeScreen
+                    }
+                },
+
+                metadata: {
+                    version: '1.0.0',
+                    lastModified: new Date().toISOString()
+                },
+                app_id: nanoid(),
+                id: nanoid(),
+                createdAt: Date.now(),
+
+            }
+            console.log({ initApp });
+            const result = db.app.create(initApp);
             await persistDb('app');
             return HttpResponse.json(result);
         } catch (error: any) {
@@ -97,4 +131,51 @@ export const appsHandlers = [
             );
         }
     }),
+
+    http.patch(`${env.API_URL}/app/:id`, async ({ params, request }) => {
+        await networkDelay();
+        try {
+            const appId = params.id as string;
+            const data = await request.json() as Partial<AppT>;
+            const result = db.app.update({
+                where: { id: { equals: appId } },
+                data: {
+                    ...data
+                } as Partial<AppT>
+            });
+            await persistDb('app');
+            return HttpResponse.json(result);
+        } catch (error: any) {
+            return HttpResponse.json(
+                { message: error?.message || 'Server Error' },
+                { status: 500 },
+            );
+        }
+    }),
+
+    http.post(`${env.API_URL}/app/:id/screen/:view_id`, async ({ params, request }) => {
+        await networkDelay();
+        try {
+            const appId = params.id as string;
+            const view_id = params.view_id as string;
+            const data = await request.json() as Partial<ViewI>;
+
+            console.log({ data });
+            const result = db.app.update({
+                where: { id: { equals: appId } },
+                data: {
+                    views: {
+                        [view_id]: data
+                    }
+                }
+            });
+            await persistDb('app');
+            return HttpResponse.json(result);
+        } catch (error: any) {
+            return HttpResponse.json(
+                { message: error?.message || 'Server Error' },
+                { status: 500 },
+            );
+        }
+    })
 ]

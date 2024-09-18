@@ -1,27 +1,27 @@
 import { Entity } from "./api";
-import { Screen } from "./screen";
+import { Screen, ViewI } from "./view";
 import { Widget } from "./widget";
 
 export type AppT = Entity<{
-    title: string;
-    description: string;
-    type: "web" | "mobile",
+    app_id: string;
+    compiled_data: AppData | null;
+    raw_data: AppData;
 }>
 
 
-
-interface CompiledApp {
+export interface AppData {
     app_id: string;
-    views: { [key: string]: Screen };
-}
-
-interface App extends AppT {
-    compiledJSON: string; // Stores the stringified CompiledApp
+    title: string;
+    views: Record<string, ViewI>;
     metadata: {
         version: string;
         lastModified: string;
-        // Add any other metadata fields you need
     };
+    description: string;
+    createdAt: number;
+}
+
+interface CompiledApp {
     app_id: string;
     views: { [key: string]: Screen };
 }
@@ -31,9 +31,9 @@ type DataReference = `{{${string}}}`;
 
 // Interface for drag and drop functionality
 interface DragDropManager {
-    addWidget(app: App, screenId: string, widget: Widget, position: number): App;
-    removeWidget(app: App, screenId: string, widgetId: string): App;
-    reorderWidgets(app: App, screenId: string, oldIndex: number, newIndex: number): App;
+    addWidget(app: App, view_id: string, widget: Widget, position: number): App;
+    removeWidget(app: App, view_id: string, widgetId: string): App;
+    reorderWidgets(app: App, view_id: string, oldIndex: number, newIndex: number): App;
 }
 
 // Interface for JSON conversion

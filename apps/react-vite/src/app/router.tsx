@@ -4,6 +4,7 @@ import {
   LoaderFunctionArgs,
   RouterProvider,
   createBrowserRouter,
+  redirect,
 } from 'react-router-dom';
 
 import { ProtectedRoute } from '@/lib/auth';
@@ -50,40 +51,66 @@ export const createAppRouter = (queryClient: QueryClient) =>
           },
           children: [
             {
-              path: ':screenId',
+              path: '',
+              loader: async () => {
+                return redirect(`screens`);
+              },
+            },
+            {
+              path: 'settings',
               lazy: async () => {
-                const { ScreenRoute } = await import(
-                  './routes/portal/app/screen'
+                const { AppSettingsRoute } = await import(
+                  './routes/portal/app/settings'
                 );
-                return { Component: ScreenRoute };
+                return { Component: AppSettingsRoute };
+              },
+            },
+            {
+              path: 'screens',
+              lazy: async () => {
+                const { AppScreensRoute } = await import(
+                  './routes/portal/app/screens'
+                );
+                return { Component: AppScreensRoute };
               },
               children: [
                 {
-                  path: 'actions',
+                  path: ':view_id',
                   lazy: async () => {
-                    const { PageActions: AppSettingsRoute } = await import(
-                      './routes/portal/app/screen/actions'
+                    const { ScreenRoute } = await import(
+                      './routes/portal/app/screen'
                     );
-                    return { Component: AppSettingsRoute };
+                    return { Component: ScreenRoute };
                   },
-                },
-                {
-                  path: 'data',
-                  lazy: async () => {
-                    const { AppDataRoute } = await import(
-                      './routes/portal/app/screen/data'
-                    );
-                    return { Component: AppDataRoute };
-                  },
-                },
-                {
-                  path: 'design',
-                  lazy: async () => {
-                    const { AppDesignRoute } = await import(
-                      './routes/portal/app/screen/design'
-                    );
-                    return { Component: AppDesignRoute };
-                  },
+                  children: [
+                    {
+                      path: 'actions',
+                      lazy: async () => {
+                        const { PageActions: AppSettingsRoute } = await import(
+                          './routes/portal/app/screen/actions'
+                        );
+                        return { Component: AppSettingsRoute };
+                      },
+                    },
+                    {
+                      path: 'data',
+                      lazy: async () => {
+                        const { AppDataRoute } = await import(
+                          './routes/portal/app/screen/data'
+                        );
+                        return { Component: AppDataRoute };
+                      },
+                    },
+                    {
+                      path: 'design',
+                      lazy: async () => {
+                        const { AppDesignRoute } = await import(
+                          './routes/portal/app/screen/design'
+                        );
+                        return { Component: AppDesignRoute };
+                      },
+                    },
+                  ],
                 },
               ],
             },

@@ -1,9 +1,7 @@
-import { Plus } from 'lucide-react';
-
 import { Button } from '@/components/ui/button';
 import { Form, FormDrawer, Input, Textarea } from '@/components/ui/form';
 import { useNotifications } from '@/components/ui/notifications';
-import { Authorization, ROLES } from '@/lib/authorization';
+import { Authorization } from '@/lib/authorization';
 
 import {
   createDiscussionInputSchema,
@@ -24,11 +22,11 @@ export const CreateDiscussion = () => {
   });
 
   return (
-    <Authorization allowedRoles={[ROLES.USER]}>
+    <Authorization policyCheck={true}>
       <FormDrawer
         isDone={createDiscussionMutation.isSuccess}
         triggerButton={
-          <Button size="sm" icon={<Plus className="size-4" />}>
+          <Button size="sm" icon="add">
             Create Discussion
           </Button>
         }

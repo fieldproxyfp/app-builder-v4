@@ -5,6 +5,11 @@
 export type BaseEntity = {
   id: string;
   createdAt: number;
+  delete: boolean;
+  deletedAt: string | null;
+  updatedAt: string | null;
+  sync: boolean;
+  lastSync: string | null;
 };
 
 export type Entity<T> = {

@@ -1,7 +1,8 @@
 import { Widget } from "./widget";
 
-interface Screen {
-    screenId: string;
+interface ViewI {
+    view_id: string;
+    route: string;
     label: string;
     data: { [key: string]: string }; // SQL queries
     margin: {
@@ -14,6 +15,6 @@ interface Screen {
 }
 
 export {
-    Screen
+    ViewI
 };
 

@@ -1,10 +1,10 @@
 /* eslint-disable camelcase */
 /* eslint-disable class-methods-use-this */
-import axios from 'axios';
-import { AuthToken } from './api-service/authToken';
-import { User } from '@/types/api';
 import API_END_POINTS from '@/constants/apiEndPoints';
 import CONSTANTS from '@/constants/constants';
+import { User } from '@/types/api';
+import axios from 'axios';
+import { AuthToken } from './api-service/authToken';
 
 type callbackType = (token: string) => void;
 type getTokenFromRefreshTokenReturnT = {
@@ -53,23 +53,29 @@ class AppService {
     }
 
     validateToken(token: string): boolean {
-        const authToken = new AuthToken(token);
-        return !authToken.isExpired;
+        return !new AuthToken(token).isExpired;
     }
 
-    clear(noRedirect?: boolean): void {
-        localStorage.removeItem(CONSTANTS.STORAGE_KEYS.ACCESS_TOKEN);
-        localStorage.removeItem(CONSTANTS.STORAGE_KEYS.REFRESH_TOKEN);
-        localStorage.removeItem(CONSTANTS.STORAGE_KEYS.USER);
+    clear(noRedirect: boolean = false): void {
+        this.clearLocalStorage();
         if (!noRedirect) {
-            setTimeout(() => {
-                window.location.replace('/auth/login');
-            }, 2000);
+            this.redirectToLogin();
         }
     }
 
+    private clearLocalStorage(): void {
+        [CONSTANTS.STORAGE_KEYS.ACCESS_TOKEN, CONSTANTS.STORAGE_KEYS.REFRESH_TOKEN, CONSTANTS.STORAGE_KEYS.USER].forEach(key =>
+            localStorage.removeItem(key)
+        );
+    }
+
+    private redirectToLogin(): void {
+        setTimeout(() => window.location.replace('/auth/login'), 2000);
+    }
+
     onAccessTokenFetched(accessToken: string): void {
-        this.authTokenGenerationQueue.map((callback: callbackType) => callback(accessToken));
+        this.authTokenGenerationQueue.forEach(callback => callback(accessToken));
+        this.authTokenGenerationQueue = [];
     }
 
     pushToAuthTokenQueue(callback: callbackType): void {
@@ -88,74 +94,67 @@ class AppService {
     }
 
     async getTokenFromRefreshToken(refreshToken: string): Promise<getTokenFromRefreshTokenReturnT> {
-        const data: getTokenFromRefreshTokenReturnT = { token: null, refreshToken: null, error: null };
         try {
             const response = await axios.get<refreshTokenRespT>(API_END_POINTS.AUTH.GET_AUTH_TOKEN, {
                 headers: {
                     Authorization: `Bearer ${refreshToken}`
                 }
             });
+
             if (response.status) {
                 const { access_token, refresh_token } = response.data;
-                data.token = access_token;
-                data.refreshToken = refresh_token;
-            } else {
-                data.error = 'INVALID_TOKEN';
+                return { token: access_token, refreshToken: refresh_token, error: null };
             }
-            return data;
+            return { token: null, refreshToken: null, error: 'INVALID_TOKEN' };
         } catch (e) {
-            data.error = 'INVALID_TOKEN';
-            return data;
+            return { token: null, refreshToken: null, error: 'INVALID_TOKEN' };
         }
     }
 
-    async getUpdatedToken(): Promise<string | Promise<string>> {
+    async getUpdatedToken(): Promise<string> {
         try {
             const { accessToken, refreshToken } = this.getTokensFromStorage() || {};
-            if (accessToken) {
-                const isValidAccessToken = this.validateToken(accessToken);
-                if (isValidAccessToken) {
-                    this.authTokenGenerationQueue = [];
-                    return accessToken;
-                }
 
-                // token is expired,get RefreshToken and update token
-                if (refreshToken) {
-                    const isValidRefreshToken = this.validateToken(refreshToken);
-                    if (isValidRefreshToken) {
-                        if (!this.isFetchingToken) {
-                            this.isFetchingToken = true;
-                            const { token: newToken, refreshToken: updatedRefreshToken } =
-                                await this.getTokenFromRefreshToken(refreshToken);
-                            if (newToken && updatedRefreshToken) {
-                                this.isFetchingToken = false;
-                                this.onAccessTokenFetched(newToken);
-                                await this.storeToken(newToken, updatedRefreshToken);
-                                return newToken;
-                            }
-                            this.clear();
-                        }
-                        const tokenFromQueue: Promise<string> = new Promise((resolve) => {
-                            this.pushToAuthTokenQueue((authToken) => {
-                                resolve(authToken);
-                            });
-                        });
-                        return tokenFromQueue;
-                    } else {
-                        alert('Session Expired! Login Again.');
-                        this.clear();
-                    }
-                } else {
-                    this.clear();
-                }
-            } else {
-                this.clear();
+            if (accessToken && this.validateToken(accessToken)) {
+                return accessToken;
             }
+
+            if (refreshToken && this.validateToken(refreshToken)) {
+                return this.handleRefreshToken(refreshToken);
+            }
+
+            throw new Error('Invalid or expired tokens');
         } catch (e) {
             this.clear();
+            return Promise.reject('Failed to get updated token');
         }
-        // eslint-disable-next-line prefer-promise-reject-errors
-        return Promise.reject('Failed to get updated token'); // Indicate failure with a rejected promise
+    }
+
+    private async handleRefreshToken(refreshToken: string): Promise<string> {
+        if (!this.isFetchingToken) {
+            return this.fetchNewToken(refreshToken);
+        }
+        return this.waitForNewToken();
+    }
+
+    private async fetchNewToken(refreshToken: string): Promise<string> {
+        this.isFetchingToken = true;
+        const { token: newToken, refreshToken: updatedRefreshToken } = await this.getTokenFromRefreshToken(refreshToken);
+
+        if (newToken && updatedRefreshToken) {
+            this.isFetchingToken = false;
+            this.onAccessTokenFetched(newToken);
+            await this.storeToken(newToken, updatedRefreshToken);
+            return newToken;
+        }
+
+        throw new Error('Failed to fetch new token');
+    }
+
+    private waitForNewToken(): Promise<string> {
+        return new Promise((resolve) => {
+            this.pushToAuthTokenQueue(resolve);
+        });
     }
 }
 

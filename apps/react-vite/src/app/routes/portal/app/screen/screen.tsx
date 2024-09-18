@@ -1,9 +1,11 @@
 import { Button } from '@/components/ui/button';
 import CodeEditor from '@/components/ui/code-editor/codeEditor';
+import { OptionT } from '@/components/ui/radio-group/RadioGroup';
 import { Typography } from '@/components/ui/typography';
-import { Screen } from '@/types/screen';
-import React, { ErrorInfo, useState } from 'react';
+import { ViewI } from '@/types/view';
+import React, { ErrorInfo, useMemo, useState } from 'react';
 import { Outlet, useOutletContext, useParams } from 'react-router-dom';
+import { useAppStore } from '../app-store';
 import sampleJson from './sample.json';
 class ErrorBoundary extends React.Component<
   { children: React.ReactNode },
@@ -32,19 +34,35 @@ class ErrorBoundary extends React.Component<
 }
 
 export const ScreenRoute = () => {
-  const screen = useOutletContext<Screen>();
-  const { appId, screenId } = useParams();
+  const screenOptions = useOutletContext<OptionT[]>();
+  const { appId, view_id } = useParams();
 
   const [jsonContent, setJsonContent] = useState(JSON.stringify(sampleJson));
   const [jsonError, setJsonError] = useState<string | null>(null);
   const [jsonView, setJsonView] = useState(false);
+
+  const { app, getScreen } = useAppStore();
+
+  const screen: ViewI | null = useMemo(() => {
+    if (app) {
+      const screen = getScreen(view_id as string);
+      if (screen) {
+        setJsonContent(JSON.stringify(screen));
+      }
+      return screen;
+    }
+    return null;
+  }, [app, view_id, getScreen]);
 
   const handleJsonChange = (value: string) => {
     setJsonContent(value);
   };
 
   return (
-    <React.Fragment>
+    <main className="grid grid-cols-12 gap-4 w-full p-2">
+      <div className="grid col-span-2 h-full bg-background border-[1px] border-border1 p-2 rounded-md shadow-sm  ">
+        <Typography variant="h2">Widget List</Typography>
+      </div>
       <div
         className={`grid ${jsonView ? 'col-span-4' : 'col-span-6'} h-full bg-background border-[1px] border-border1 p-2 rounded-md shadow-sm`}
       >
@@ -98,9 +116,10 @@ export const ScreenRoute = () => {
               )}
             </div>
           )}
+
           <Outlet />
         </div>
       </div>
-    </React.Fragment>
+    </main>
   );
 };

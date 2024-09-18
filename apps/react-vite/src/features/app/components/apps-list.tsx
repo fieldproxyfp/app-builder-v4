@@ -27,14 +27,14 @@ export const AppsList = () => {
     return (
       <div className="flex h-48 w-full items-center justify-center">
         <div className="text-destructive text-lg">
-          An error occurred while fetching apps. Please try again later.
+          {appsQuery.error.message ||
+            'An error occurred while fetching apps. Please try again later.'}
         </div>
       </div>
-    )
+    );
   }
 
-  const apps = appsQuery.data?.data;
-  const meta = appsQuery.data?.meta;
+  const apps = appsQuery.data;
 
   if (!apps) return null;
 
@@ -44,11 +44,17 @@ export const AppsList = () => {
       columns={[
         {
           title: 'Title',
-          field: 'title',
+          field: 'raw_data',
+          Cell({ entry: { raw_data } }) {
+            return <span>{raw_data.title}</span>;
+          },
         },
         {
           title: 'Description',
-          field: 'description',
+          field: 'raw_data',
+          Cell({ entry: { raw_data } }) {
+            return <span>{raw_data.description}</span>;
+          },
         },
         {
           title: 'Created At',
@@ -58,26 +64,25 @@ export const AppsList = () => {
           },
         },
         {
-          title: "Actions",
-          field: 'id',
-          Cell({ entry: { id } }) {
+          title: 'Actions',
+          field: 'app_id',
+          Cell({ entry: { app_id } }) {
             return (
               <div className="flex items-center gap-4">
-                <Link to={`/app/${id}`}>View</Link>
-                <DeleteApp id={id} />
-
+                <Link to={`/app/${app_id}`}>View</Link>
+                <DeleteApp id={app_id} />
               </div>
             );
           },
         },
       ]}
-      pagination={
-        meta && {
-          totalPages: meta.totalPages,
-          currentPage: meta.page,
-          rootUrl: '',
-        }
-      }
+      // pagination={
+      //   meta && {
+      //     totalPages: meta.totalPages,
+      //     currentPage: meta.page,
+      //     rootUrl: '',
+      //   }
+      // }
     />
   );
 };

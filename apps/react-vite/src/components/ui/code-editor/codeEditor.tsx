@@ -14,7 +14,7 @@ interface CodeEditorProps {
   value: string;
   onChange: (value: string) => void;
   options?: monaco.editor.IStandaloneEditorConstructionOptions;
-  contextOptions?: any;
+  contextOptions?: { tables: Record<string, string[]> };
 }
 
 const CodeEditor: React.FC<CodeEditorProps> = ({
@@ -81,15 +81,53 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     });
   };
 
-  const setupSQLFeatures = (context: any) => {
-    // Add SQL-specific features, like auto-completion for table names
+  const setupSQLFeatures = (context: Record<string, string[]>) => {
     monaco.languages.registerCompletionItemProvider('sql', {
       provideCompletionItems: (model, position) => {
-        const suggestions = context.tables.map((table: string) => ({
-          label: table,
-          kind: monaco.languages.CompletionItemKind.Keyword,
-          insertText: table,
-        }));
+        const textUntilPosition = model.getValueInRange({
+          startLineNumber: 1,
+          startColumn: 1,
+          endLineNumber: position.lineNumber,
+          endColumn: position.column,
+        });
+        const wordUntilPosition = model.getWordUntilPosition(position);
+        const range = {
+          startLineNumber: position.lineNumber,
+          endLineNumber: position.lineNumber,
+          startColumn: wordUntilPosition.startColumn,
+          endColumn: wordUntilPosition.endColumn,
+        };
+
+        const suggestions: monaco.languages.CompletionItem[] = [];
+
+        // Suggest table names on blank space
+        if (/\s$/.test(textUntilPosition)) {
+          Object.keys(context).forEach((table) => {
+            suggestions.push({
+              label: table,
+              kind: monaco.languages.CompletionItemKind.Class,
+              insertText: table,
+              range: range,
+            });
+          });
+        }
+
+        // Suggest column names when typing table.{column name}
+        const tableMatch = textUntilPosition.match(/(\w+)\.\w*$/);
+        if (tableMatch) {
+          const tableName = tableMatch[1];
+          const columns = context[tableName] || [];
+          columns.forEach((column) => {
+            suggestions.push({
+              label: column,
+              kind: monaco.languages.CompletionItemKind.Field,
+              insertText: column,
+              range: range,
+              detail: `Column of ${tableName}`,
+            });
+          });
+        }
+
         return { suggestions };
       },
     });

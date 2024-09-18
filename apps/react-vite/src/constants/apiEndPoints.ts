@@ -235,6 +235,14 @@ const API_END_POINTS = {
         GET_KEY: 'v3/organization/getOrganizationKeyValue',
         UPDATE_KEY: 'v3/organization/addOrganizationKeyValue',
     },
+    APPS: {
+        GET_APPS: 'v4/apps/getApp',
+        ADD_APP: 'v4/apps/addApp',
+        SET_APP: 'v4/apps/setApp',
+        REMOVE_APP: 'v4/apps/removeApp',
+        REMOVE_SCREEN: 'v4/apps/removeScreen',
+        CHECK_UNIQUE_APP_OR_SCREEN: 'v4/apps/checkUniqueAppOrScreen',
+    },
 };
 
 
