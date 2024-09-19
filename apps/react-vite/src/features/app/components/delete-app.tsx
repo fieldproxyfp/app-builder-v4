@@ -14,8 +14,9 @@ export const DeleteApp = ({ id }: DeleteAppProps) => {
     mutationConfig: {
       onSuccess: () => {
         addNotification({
-          type: 'success',
+          type: 'error',
           title: 'App Deleted',
+          autoDismiss: true,
         });
       },
     },
@@ -27,11 +28,7 @@ export const DeleteApp = ({ id }: DeleteAppProps) => {
       icon="danger"
       title="Delete App"
       body="Are you sure you want to delete this App?"
-      triggerButton={
-        <Button variant="destructive" size="sm" icon="delete">
-          Delete
-        </Button>
-      }
+      triggerButton={<Button variant="ghost" size="icon" icon="delete" />}
       confirmButton={
         <Button
           isLoading={deleteAppMutation.isPending}

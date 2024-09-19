@@ -1,5 +1,3 @@
-import { Pen } from 'lucide-react';
-
 import { Button } from '@/components/ui/button';
 import { Form, FormDrawer, Input, Textarea } from '@/components/ui/form';
 import { useNotifications } from '@/components/ui/notifications';
@@ -36,7 +34,7 @@ export const UpdateDiscussion = ({ discussionId }: UpdateDiscussionProps) => {
       <FormDrawer
         isDone={updateDiscussionMutation.isSuccess}
         triggerButton={
-          <Button icon={<Pen className="size-4" />} size="sm">
+          <Button icon={'edit'} size="sm">
             Update Discussion
           </Button>
         }

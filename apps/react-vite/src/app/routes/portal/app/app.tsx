@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button';
 import { ErrorBlock } from '@/components/ui/error-block';
 import { Loader } from '@/components/ui/loader/loader';
 import { Typography } from '@/components/ui/typography';
@@ -47,7 +46,7 @@ export const AppRoute = () => {
             Settings
           </NavLink>
         </div>
-        <Button variant="positive">Launch</Button>
+        <div />
       </header>
 
       <main className="  flex-col flex-grow ">

@@ -1,5 +1,3 @@
-import { Trash } from 'lucide-react';
-
 import { Button } from '@/components/ui/button';
 import { ConfirmationDialog } from '@/components/ui/dialog';
 import { useNotifications } from '@/components/ui/notifications';
@@ -31,7 +29,7 @@ export const DeleteDiscussion = ({ id }: DeleteDiscussionProps) => {
         title="Delete Discussion"
         body="Are you sure you want to delete this discussion?"
         triggerButton={
-          <Button variant="destructive" icon={<Trash className="size-4" />}>
+          <Button variant="destructive" icon="delete">
             Delete Discussion
           </Button>
         }

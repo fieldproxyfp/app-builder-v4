@@ -1,5 +1,3 @@
-import { Trash } from 'lucide-react';
-
 import { Button } from '@/components/ui/button';
 import { ConfirmationDialog } from '@/components/ui/dialog';
 import { useNotifications } from '@/components/ui/notifications';
@@ -32,11 +30,7 @@ export const DeleteComment = ({ id, discussionId }: DeleteCommentProps) => {
       title="Delete Comment"
       body="Are you sure you want to delete this comment?"
       triggerButton={
-        <Button
-          variant="destructive"
-          size="sm"
-          icon={<Trash className="size-4" />}
-        >
+        <Button variant="destructive" size="sm" icon={'delete'}>
           Delete Comment
         </Button>
       }

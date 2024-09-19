@@ -1,7 +1,7 @@
 import API_END_POINTS from '@/constants/apiEndPoints';
 import { MutationConfig, QueryConfig } from '@/lib/react-query';
 import { BackEndRequest } from '@/services/api-service/ProtectedApiInstance';
-import { AppT } from '@/types/app';
+import { AppData, AppT } from '@/types/app';
 import { ViewI } from '@/types/view';
 import { isValidArray } from '@/utils/format';
 import { queryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -115,3 +115,87 @@ export const useScreen = ({ appId, view_id, queryConfig }: UseScreenOptions) => 
 };
 
 
+export const deleteScreen = (appId: string, view_id: string) => {
+    const queryParams = new URLSearchParams({
+        app_id: appId,
+        view_id: view_id,
+    });
+    return BackEndRequest.Delete(`${API_END_POINTS.APPS.REMOVE_SCREEN}?${queryParams}`)
+        .then((res) => res.data).then((response) => {
+            if (!response.error) {
+                return view_id
+            } else {
+                throw new Error(response.message);
+            }
+        })
+}
+
+type UseDeleteScreenMutationOptions = {
+    appId: string;
+    onSuccess?: (view_id: string) => void;
+    onError?: (error: Error) => void;
+};
+
+export const useDeleteScreenMutation = ({
+    appId,
+    onSuccess,
+    onError,
+}: UseDeleteScreenMutationOptions) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (view_id: string) => deleteScreen(appId, view_id),
+        onSuccess: (view_id) => {
+            queryClient.invalidateQueries({
+                queryKey: getAppMetaQueryOptions(appId).queryKey,
+            });
+            onSuccess?.(view_id);
+        },
+        onError: (error: Error) => {
+            onError?.(error);
+        },
+    });
+};
+
+
+
+export const updateApp = async (appId: string, appData: AppData) => {
+    const appPayload = {
+        raw_json: appData,
+        compiled_json: appData,
+        app_id: appId,
+    }
+    return BackEndRequest.Post<AppT>(
+        `${API_END_POINTS.APPS.SET_APP}`,
+        appPayload
+    ).then((res) => res.data).then((response) => {
+        if (!response.error) {
+            return appId;
+        } else {
+            throw new Error(response.message);
+        }
+    });
+};
+
+type UseUpdateAppMutationOptions = {
+    onSuccess?: (appId: string) => void;
+    onError?: (error: Error) => void;
+};
+
+export const useUpdateAppMutation = ({ onSuccess, onError }: UseUpdateAppMutationOptions = {}) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ appId, appData }: { appId: string; appData: AppData }) =>
+            updateApp(appId, appData),
+        onSuccess: (appId) => {
+            queryClient.invalidateQueries({
+                queryKey: getAppMetaQueryOptions(appId).queryKey,
+            });
+            onSuccess?.(appId);
+        },
+        onError: (error: Error) => {
+            onError?.(error);
+        },
+    });
+};

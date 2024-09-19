@@ -4,7 +4,7 @@ import { env } from '@/config/env';
 
 import { CreateAppInput } from '@/features/app/api/create-app';
 import { AppT } from '@/types/app';
-import { ViewI } from '@/types/screen';
+import { ViewI } from '@/types/view';
 import { nanoid } from 'nanoid';
 import { db, persistDb } from '../db';
 import {
@@ -16,7 +16,7 @@ export const appsHandlers = [
         await networkDelay();
         try {
             const data = (await request.json()) as CreateAppInput;
-            const homeScreen: Partial<ViewI> = {
+            const homeScreen: ViewI = {
                 view_id: nanoid(),
                 label: 'Home',
                 data: {},
@@ -26,7 +26,8 @@ export const appsHandlers = [
                     right: 0,
                     top: 0,
                     bottom: 0
-                }
+                },
+                route: ''
             }
             const initApp: Partial<AppT> = {
                 ...data,
@@ -34,13 +35,14 @@ export const appsHandlers = [
                     ...data,
                     title: data.title || 'Untitled App',
                     views: {
-                        "home": homeScreen
-                    }
-                },
-
-                metadata: {
-                    version: '1.0.0',
-                    lastModified: new Date().toISOString()
+                        homeScreen
+                    },
+                    app_id: nanoid(),
+                    metadata: {
+                        version: '1.0.0',
+                        lastModified: new Date().toISOString()
+                    },
+                    createdAt: Date.now(),
                 },
                 app_id: nanoid(),
                 id: nanoid(),

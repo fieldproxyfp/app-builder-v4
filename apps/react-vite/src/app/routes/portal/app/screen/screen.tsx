@@ -6,6 +6,7 @@ import { useNotifications } from '@/components/ui/notifications';
 import { OptionT } from '@/components/ui/radio-group/RadioGroup';
 import { Typography } from '@/components/ui/typography';
 import {
+  useDeleteScreenMutation,
   useScreen,
   useUpdateScreenMutation,
 } from '@/features/app/api/get-app-meta';
@@ -13,12 +14,13 @@ import { CreateScreen } from '@/features/screen/components/create-screen';
 import React, {
   ErrorInfo,
   Fragment,
+  useCallback,
   useEffect,
-  useMemo,
   useState,
 } from 'react';
 import {
   NavLink,
+  useNavigate,
   useOutletContext,
   useParams,
   useSearchParams,
@@ -69,22 +71,36 @@ export const ScreenRoute = () => {
   });
 
   const [jsonContent, setJsonContent] = useState<string | null>(null);
-  const [jsonError, setJsonError] = useState<string>('');
   const { addNotification } = useNotifications();
+  const [hasUnSavedChanges, setHasUnSavedChanges] = useState(false);
+  const [parsedJson, setParsedJson] = useState<any>(null);
+  const navigate = useNavigate();
+  const [blur, setBlur] = useState(false);
 
-  const parsedJson = useMemo(() => {
-    try {
-      if (!jsonContent) {
-        return null;
-      }
-      const parsed = JSON.parse(jsonContent);
-      setJsonError('');
-      return parsed;
-    } catch (error) {
-      setJsonError('Invalid JSON' + error);
-      return null;
-    }
-  }, [jsonContent]);
+  const deleteScreenMutation = useDeleteScreenMutation({
+    appId: appId as string,
+    onSuccess: (view_id: string) => {
+      addNotification({
+        title: 'Screen Deleted',
+        message: `Screen deleted successfully`,
+        type: 'error',
+        autoDismiss: true,
+      });
+      setBlur(true);
+      setTimeout(() => {
+        navigate(`/app/${appId}/screens`);
+      }, 2600);
+    },
+    onError: (error) => {
+      setBlur(false);
+      addNotification({
+        title: 'Error',
+        message: error.message,
+        type: 'error',
+        autoDismiss: true,
+      });
+    },
+  });
 
   useEffect(() => {
     if (isSuccess && view) {
@@ -92,23 +108,34 @@ export const ScreenRoute = () => {
     }
   }, [view, isSuccess]);
 
-  useEffect(() => {
-    console.log({ view_id, appId });
-  }, [view_id, appId]);
-
   const updateScreenMutation = useUpdateScreenMutation({
     appId: appId as string,
     onSuccess: (viewId) => {
+      setHasUnSavedChanges(false);
       addNotification({
         title: 'Screen Updated',
         message: 'Screen updated successfully',
         type: 'success',
+        autoDismiss: true,
       });
     },
   });
 
+  const debouncedSetParsedJson = useCallback(
+    debounce((value: string) => {
+      try {
+        setParsedJson(JSON.parse(value));
+        setHasUnSavedChanges(true);
+      } catch (error) {
+        console.error('Failed to parse JSON:', error);
+      }
+    }, 500),
+    [],
+  );
+
   const handleJsonChange = (value: string) => {
     setJsonContent(value);
+    debouncedSetParsedJson(value);
   };
 
   const handleSave = () => {
@@ -153,6 +180,7 @@ export const ScreenRoute = () => {
         <Button
           variant="secondary"
           size="sm"
+          disabled={!hasUnSavedChanges}
           onClick={handleSave}
           isLoading={updateScreenMutation.isPending}
         >
@@ -172,7 +200,9 @@ export const ScreenRoute = () => {
           <Loader label="Loading Screen" />
         </div>
       ) : (
-        <main className="grid grid-cols-12 gap-4 w-full p-2">
+        <main
+          className={`grid grid-cols-12 gap-4 w-full p-2 ${blur ? 'blur-sm' : ''}`}
+        >
           <div className="grid col-span-2 h-full bg-background border-[1px] border-border1 p-2 rounded-md shadow-sm  ">
             <div className="flex flex-col gap-2 w-full">
               <div className="flex justify-between gap-3 items-center">
@@ -181,12 +211,26 @@ export const ScreenRoute = () => {
               </div>
 
               {screenOptions.map((screen) => (
-                <NavLink
-                  key={screen.value}
-                  to={`../${screen.value}?tab=${tab}`}
-                >
-                  {screen.label}
-                </NavLink>
+                <div className="flex flex-row w-full items-center justify-between gap-2">
+                  <NavLink
+                    key={screen.value}
+                    className={({ isActive }) =>
+                      isActive ? 'text-blue-500' : ''
+                    }
+                    to={`../${screen.value}?tab=${tab}`}
+                  >
+                    {screen.label}
+                  </NavLink>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    icon="delete_outline"
+                    onClick={() => {
+                      deleteScreenMutation.mutate(view_id as string);
+                      setBlur(true);
+                    }}
+                  />
+                </div>
               ))}
             </div>
           </div>
@@ -231,7 +275,6 @@ export const ScreenRoute = () => {
                         value={jsonContent || ''}
                         onChange={handleJsonChange}
                         theme="light"
-                        error={jsonError}
                       />
                     </ErrorBoundary>
                   )}
@@ -248,3 +291,14 @@ export const ScreenRoute = () => {
     </Fragment>
   );
 };
+
+function debounce<T extends (...args: any[]) => any>(
+  func: T,
+  delay: number,
+): (...args: Parameters<T>) => void {
+  let timeoutId: ReturnType<typeof setTimeout>;
+  return (...args: Parameters<T>) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  };
+}

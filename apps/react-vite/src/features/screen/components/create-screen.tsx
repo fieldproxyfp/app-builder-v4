@@ -3,6 +3,7 @@ import { Form, FormDrawer, Input, Textarea } from '@/components/ui/form';
 import { useNotifications } from '@/components/ui/notifications';
 import { useUpdateScreenMutation } from '@/features/app/api/get-app-meta';
 import { nanoid } from 'nanoid';
+import { useNavigate } from 'react-router-dom';
 
 import { z } from 'zod';
 
@@ -21,15 +22,17 @@ export const CreateScreen = ({
   size: 'sm' | 'lg';
 }) => {
   const { addNotification } = useNotifications();
+  const navigate = useNavigate();
 
   const updateScreenMutation = useUpdateScreenMutation({
     appId,
     onSuccess: (viewId) => {
-      console.log('viewId', viewId);
+      navigate(`/app/${appId}/screens/${viewId}?tab=ui`);
       addNotification({
         title: 'Screen Created',
         message: 'Screen created successfully',
         type: 'success',
+        autoDismiss: true,
       });
     },
   });

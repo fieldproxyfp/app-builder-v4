@@ -35,7 +35,7 @@ export const UsersList = () => {
         },
         {
           title: 'Email',
-          field: 'email',
+          field: 'emailId',
         },
         {
           title: 'Role',

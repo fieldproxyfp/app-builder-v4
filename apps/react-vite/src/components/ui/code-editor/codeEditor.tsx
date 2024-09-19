@@ -1,14 +1,61 @@
-import { loader } from '@monaco-editor/react';
+'use client';
 import JSON5 from 'json5';
 import * as monaco from 'monaco-editor';
+import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
+import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker';
+import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker';
+import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
+import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
 // import { format as formatJS } from 'prettier';
 // import parserBabel from 'prettier/parser-babel';
-import React, { useEffect, useRef } from 'react';
+import { loader } from '@monaco-editor/react';
+import React, { useEffect, useRef, useState } from 'react';
 import { format as formatSQL } from 'sql-formatter';
 import { Button } from '../button';
 import { Typography } from '../typography';
 
-// Load Monaco Editor
+// self.MonacoEnvironment = {
+//   getWorker(_, label) {
+//     if (label === 'json') {
+//       return new jsonWorker();
+//     }
+//     if (label === 'css' || label === 'scss' || label === 'less') {
+//       return new cssWorker();
+//     }
+//     if (label === 'html' || label === 'handlebars' || label === 'razor') {
+//       return new htmlWorker();
+//     }
+//     if (label === 'typescript' || label === 'javascript') {
+//       return new tsWorker();
+//     }
+//     return new editorWorker();
+//   },
+// };
+
+try {
+  self.MonacoEnvironment = {
+    getWorker: function (_moduleId, label: string) {
+      if (label === 'json') {
+        return new jsonWorker();
+      } else if (label === 'ts' || label === 'typescript') {
+        return new tsWorker();
+      } else if (
+        label === 'html' ||
+        label === 'handlebars' ||
+        label === 'razor'
+      ) {
+        return new htmlWorker();
+      } else if (label === 'css' || label === 'scss' || label === 'less') {
+        return new cssWorker();
+      }
+      return new editorWorker();
+    },
+    globalAPI: true,
+  };
+} catch (error) {
+  console.error('Failed to configure Monaco Environment:', error);
+}
+
 loader.config({ monaco });
 
 interface CodeEditorProps {
@@ -18,7 +65,6 @@ interface CodeEditorProps {
   options?: monaco.editor.IStandaloneEditorConstructionOptions;
   contextOptions?: { tables: Record<string, string[]> };
   theme?: 'light' | 'dark';
-  error?: string;
 }
 
 const CodeEditor: React.FC<CodeEditorProps> = ({
@@ -28,10 +74,10 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   options = {},
   contextOptions = {},
   theme = 'light',
-  error,
 }) => {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const monacoEl = useRef(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   useEffect(() => {
     if (monacoEl.current) {
@@ -154,6 +200,27 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     });
   };
 
+  const validateCode = () => {
+    if (editorRef.current) {
+      const value = editorRef.current.getValue();
+      console.log(value);
+      try {
+        switch (language) {
+          case 'json':
+            JSON.parse(value);
+            break;
+          case 'sql':
+            formatSQL(value);
+            break;
+        }
+        setValidationError(null);
+      } catch (error) {
+        console.log(error);
+        setValidationError('Invalid ' + language + error);
+      }
+    }
+  };
+
   const formatCode = () => {
     if (editorRef.current) {
       const value = editorRef.current.getValue();
@@ -167,12 +234,12 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
           case 'sql':
             formatted = formatSQL(value);
             break;
-            //   case 'javascript':
-            //     formatted = formatJS(value, {
-            //       parser: 'babel',
-            //       plugins: [parserBabel],
-            //     });
-            break;
+          //   case 'javascript':
+          //     formatted = formatJS(value, {
+          //       parser: 'babel',
+          //       plugins: [parserBabel],
+          //     });
+          // break;
         }
 
         editorRef.current.setValue(formatted);
@@ -190,11 +257,16 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     <div className="code-editor-container flex flex-col h-full">
       <div className="code-editor-toolbar flex gap-2 justify-between items-center mb-2">
         <Typography variant="small" className="text-destructive text-sm ">
-          {error}
+          {validationError}
         </Typography>
-        <Button variant="outline" size="sm" onClick={formatCode}>
-          Format
-        </Button>
+        <div className="inline-flex items-center  gap-2">
+          <Button variant="outline" size="sm" onClick={validateCode}>
+            Validate
+          </Button>
+          <Button variant="outline" size="sm" onClick={formatCode}>
+            Format
+          </Button>
+        </div>
       </div>
       <div
         ref={monacoEl}
