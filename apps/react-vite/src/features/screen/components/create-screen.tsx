@@ -1,13 +1,8 @@
-import { useAppStore } from '@/app/routes/portal/app/app-store';
 import { Button } from '@/components/ui/button';
 import { Form, FormDrawer, Input, Textarea } from '@/components/ui/form';
 import { useNotifications } from '@/components/ui/notifications';
-import API_END_POINTS from '@/constants/apiEndPoints';
-import { BackEndRequest } from '@/services/api-service/ProtectedApiInstance';
-import { networkDelay } from '@/testing/mocks/utils';
-import { ViewI } from '@/types/view';
+import { useUpdateScreenMutation } from '@/features/app/api/get-app-meta';
 import { nanoid } from 'nanoid';
-import { useState } from 'react';
 
 import { z } from 'zod';
 
@@ -25,14 +20,18 @@ export const CreateScreen = ({
   appId: string;
   size: 'sm' | 'lg';
 }) => {
-  const [submitState, setSubmitState] = useState<{
-    isLoading: boolean;
-    isSuccess: boolean;
-    error: string | null;
-  }>({
-    isLoading: false,
-    isSuccess: false,
-    error: null,
+  const { addNotification } = useNotifications();
+
+  const updateScreenMutation = useUpdateScreenMutation({
+    appId,
+    onSuccess: (viewId) => {
+      console.log('viewId', viewId);
+      addNotification({
+        title: 'Screen Created',
+        message: 'Screen created successfully',
+        type: 'success',
+      });
+    },
   });
 
   const defaultValues: CreateScreenInput = {
@@ -40,76 +39,33 @@ export const CreateScreen = ({
     route: '',
   };
 
-  const { addNotification } = useNotifications();
-
-  const { addScreen } = useAppStore();
-
-  const createScreen = async (values: CreateScreenInput) => {
-    // setSubmitState({ ...submitState, isLoading: true });
-    try {
-      networkDelay();
-      const newScreen: ViewI = {
-        view_id: nanoid(),
-        route: values.route,
-        label: values.title,
-        data: {},
-        margin: {
-          left: 0,
-          right: 0,
-          top: 0,
-          bottom: 0,
-        },
-        ui: [],
-      };
-
-      const response = await BackEndRequest.Post(API_END_POINTS.APPS.SET_APP, {
-        app_id: appId,
-        view_id: newScreen.view_id,
-        compiled_json: {},
-        raw_json: newScreen,
-      });
-      if (response.status === 200) {
-        addScreen(newScreen);
-        setSubmitState({ ...submitState, isSuccess: true, isLoading: false });
-        addNotification({
-          title: 'Screen created',
-          message: 'Screen created successfully',
-          type: 'success',
-        });
-      } else {
-        setSubmitState({
-          ...submitState,
-          isLoading: false,
-          error: 'Failed to create screen',
-        });
-        addNotification({
-          title: 'Error',
-          message: 'Failed to create screen',
-          type: 'error',
-        });
-      }
-    } catch (error: any) {
-      setSubmitState({
-        ...submitState,
-        isLoading: false,
-        error: error?.message,
-      });
-      addNotification({
-        title: 'Error',
-        message: error?.message,
-        type: 'error',
-      });
-    }
+  const createScreen = (values: CreateScreenInput) => {
+    updateScreenMutation.mutate({
+      view_id: nanoid(),
+      route: values.route,
+      label: values.title,
+      data: {},
+      margin: {
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+      },
+      ui: [],
+    });
   };
 
   return (
     <FormDrawer
-      isDone={submitState.isSuccess}
+      isDone={updateScreenMutation.isSuccess}
       triggerButton={
         size === 'lg' ? (
           <Button size="lg">Create Screen</Button>
         ) : (
-          <Button size="icon" icon="add"></Button>
+          <Button size="icon" icon="add" variant="outline">
+            {' '}
+            Create Screen
+          </Button>
         )
       }
       title="Create Screen"
@@ -118,7 +74,7 @@ export const CreateScreen = ({
           form="create-screen"
           type="submit"
           size="sm"
-          isLoading={submitState.isLoading}
+          isLoading={updateScreenMutation.isPending}
         >
           Submit
         </Button>

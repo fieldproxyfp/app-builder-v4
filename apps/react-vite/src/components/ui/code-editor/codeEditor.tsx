@@ -3,8 +3,10 @@ import JSON5 from 'json5';
 import * as monaco from 'monaco-editor';
 // import { format as formatJS } from 'prettier';
 // import parserBabel from 'prettier/parser-babel';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { format as formatSQL } from 'sql-formatter';
+import { Button } from '../button';
+import { Typography } from '../typography';
 
 // Load Monaco Editor
 loader.config({ monaco });
@@ -15,6 +17,8 @@ interface CodeEditorProps {
   onChange: (value: string) => void;
   options?: monaco.editor.IStandaloneEditorConstructionOptions;
   contextOptions?: { tables: Record<string, string[]> };
+  theme?: 'light' | 'dark';
+  error?: string;
 }
 
 const CodeEditor: React.FC<CodeEditorProps> = ({
@@ -23,20 +27,22 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   onChange,
   options = {},
   contextOptions = {},
+  theme = 'light',
+  error,
 }) => {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const monacoEl = useRef(null);
-  const [isMinimized, setIsMinimized] = useState(false);
 
   useEffect(() => {
     if (monacoEl.current) {
       editorRef.current = monaco.editor.create(monacoEl.current, {
         value,
         language,
-        minimap: { enabled: false },
+        minimap: { enabled: true },
         folding: true,
         lineNumbers: 'on',
         wordWrap: 'on',
+        theme: theme === 'light' ? 'vs' : 'vs-dark',
         ...options,
       });
 
@@ -50,6 +56,14 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
 
     return () => editorRef.current?.dispose();
   }, []);
+
+  useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.updateOptions({
+        theme: theme === 'dark' ? 'vs-dark' : 'vs-light',
+      });
+    }
+  }, [theme]);
 
   useEffect(() => {
     if (editorRef.current) {
@@ -168,25 +182,24 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     }
   };
 
-  const toggleMinimize = () => {
-    setIsMinimized(!isMinimized);
-    if (editorRef.current) {
-      editorRef.current.layout();
-    }
-  };
+  useEffect(() => {
+    formatCode();
+  }, [editorRef.current]);
 
   return (
-    <div className="code-editor-container">
-      <div className="code-editor-toolbar">
-        <button onClick={formatCode}>Format</button>
-        <button onClick={toggleMinimize}>
-          {isMinimized ? 'Expand' : 'Minimize'}
-        </button>
+    <div className="code-editor-container flex flex-col h-full">
+      <div className="code-editor-toolbar flex gap-2 justify-between items-center mb-2">
+        <Typography variant="small" className="text-destructive text-sm ">
+          {error}
+        </Typography>
+        <Button variant="outline" size="sm" onClick={formatCode}>
+          Format
+        </Button>
       </div>
       <div
         ref={monacoEl}
-        className="code-editor"
-        style={{ height: isMinimized ? '100px' : '500px', width: '100%' }}
+        className="code-editor flex-grow"
+        style={{ height: '100%', width: '100%' }}
       />
     </div>
   );

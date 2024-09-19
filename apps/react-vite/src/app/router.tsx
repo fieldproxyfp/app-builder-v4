@@ -82,35 +82,6 @@ export const createAppRouter = (queryClient: QueryClient) =>
                     );
                     return { Component: ScreenRoute };
                   },
-                  children: [
-                    {
-                      path: 'actions',
-                      lazy: async () => {
-                        const { PageActions: AppSettingsRoute } = await import(
-                          './routes/portal/app/screen/actions'
-                        );
-                        return { Component: AppSettingsRoute };
-                      },
-                    },
-                    {
-                      path: 'data',
-                      lazy: async () => {
-                        const { AppDataRoute } = await import(
-                          './routes/portal/app/screen/data'
-                        );
-                        return { Component: AppDataRoute };
-                      },
-                    },
-                    {
-                      path: 'design',
-                      lazy: async () => {
-                        const { AppDesignRoute } = await import(
-                          './routes/portal/app/screen/design'
-                        );
-                        return { Component: AppDesignRoute };
-                      },
-                    },
-                  ],
                 },
               ],
             },

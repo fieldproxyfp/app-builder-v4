@@ -3,9 +3,7 @@ import { ErrorBlock } from '@/components/ui/error-block';
 import { Loader } from '@/components/ui/loader/loader';
 import { Typography } from '@/components/ui/typography';
 import { useAppMeta } from '@/features/app/api/get-app-meta';
-import { useEffect } from 'react';
 import { NavLink, Outlet, useParams } from 'react-router-dom';
-import { useAppStore } from './app-store';
 
 export const AppRoute = () => {
   const { appId } = useParams();
@@ -14,22 +12,7 @@ export const AppRoute = () => {
     isLoading,
     isError,
     error,
-    isSuccess,
   } = useAppMeta({ appId: appId ?? '' });
-
-  const { app, setApp } = useAppStore();
-
-  useEffect(() => {
-    if (isSuccess && appMeta) {
-      setApp(appMeta);
-    }
-  }, [appMeta, setApp, isSuccess]);
-
-  useEffect(() => {
-    if (app) {
-      console.log({ app });
-    }
-  }, [app]);
 
   return (
     <div className="size-full flex flex-col flex-grow ">
@@ -46,7 +29,7 @@ export const AppRoute = () => {
             <div className="w-48 h-6 bg-gray-300 rounded animate-pulse"></div>
           ) : (
             <Typography variant="body">
-              {app?.raw_data?.title || 'Check'}
+              {appMeta?.raw_data?.title || 'Check'}
             </Typography>
           )}
         </div>
@@ -79,8 +62,8 @@ export const AppRoute = () => {
           <div className="flex justify-center items-center h-[calc(100vh-6rem)]">
             <ErrorBlock title={error.message} />
           </div>
-        ) : appId && app ? (
-          <Outlet context={app} />
+        ) : appId && appMeta ? (
+          <Outlet context={appMeta} />
         ) : (
           <div className="flex justify-center items-center h-[calc(100vh-6rem)]">
             <ErrorBlock title="App not found" />
