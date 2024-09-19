@@ -1,4 +1,4 @@
-import { PanelLeft, User2 } from 'lucide-react';
+import { PanelLeft, PanelRight, User2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useNavigation } from 'react-router-dom';
 
@@ -8,7 +8,7 @@ import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
 import { useLogout } from '@/lib/auth';
 import { ROLES, useAuthorization } from '@/lib/authorization';
 import { cn } from '@/utils/cn';
-
+import { faBars } from '@fortawesome/free-solid-svg-icons';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown';
 import { Link } from '../ui/link';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 type SideNavigationItem = {
   name: string;
@@ -35,7 +36,6 @@ export const Logo = () => {
 
 export const Progress = () => {
   const { state, location } = useNavigation();
-
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -77,6 +77,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const logout = useLogout();
   const { checkAccess } = useAuthorization();
   const navigate = useNavigate();
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const navigation = [
     { name: 'Dashboard', to: '.', icon: 'home' },
     { name: 'Apps', to: './apps', icon: 'apps' },
@@ -89,40 +90,59 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   ].filter(Boolean) as SideNavigationItem[];
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-muted/40 ">
-      <aside className="fixed inset-y-0 left-0 z-10 hidden w-60 flex-col border-r bg-black sm:flex">
-        <nav className="flex flex-col items-center gap-4 px-2 py-4">
-          <div className="flex h-16 shrink-0 items-center px-4">
-            <Logo />
-          </div>
-          {navigation.map((item) => (
-            <NavLink
-              key={item.name}
-              to={item.to}
-              end={item.name !== 'Discussions'}
-              className={({ isActive }) =>
-                cn(
-                  'text-gray-300 hover:bg-gray-700 hover:text-white',
-                  'group flex flex-1 w-full items-center rounded-md p-2 text-base font-medium',
-                  isActive && 'bg-gray-900 text-white',
-                )
-              }
-            >
-              <span
-                className={cn(
-                  'text-gray-400 group-hover:text-gray-300',
-                  'mr-4 size-6 shrink-0 material-icons-round',
-                )}
-                aria-hidden="true"
+    <div className="flex min-h-screen w-full flex-col bg-muted/40">
+      
+      <aside
+        className={cn(
+          'fixed inset-y-0 left-0 z-10 flex flex-col border-r bg-black sm:flex transition-all',
+          isCollapsed ? 'w-0 bg-none border-none' : 'w-60'
+        )}
+      >
+
+        {/* Collapse button */}
+        <button className='flex flex-row justify-start mt-2 ml-2' onClick={() => setIsCollapsed(!isCollapsed)}>
+        <FontAwesomeIcon icon={faBars} size='xl' style={!isCollapsed ?  {color: '#FFFFFF'} : {color: '#000000'}}/>        
+        </button>
+        
+        {
+          !isCollapsed &&
+          <nav className="flex flex-col items-center gap-4 px-2 py-4">
+
+            <div className="flex h-16 shrink-0 items-center px-4">
+              <Logo />
+            </div>
+            
+            {navigation.map((item) => (
+              <NavLink
+                key={item.name}
+                to={item.to}
+                end={item.name !== 'Discussions'}
+                className={({ isActive }) =>
+                  cn(
+                    'text-gray-300 hover:bg-gray-700 hover:text-white',
+                    'group flex flex-1 w-full items-center rounded-md p-2 text-base font-medium',
+                    isActive && 'bg-gray-900 text-white'
+                  )
+                }
               >
-                {item.icon}
-              </span>
-              {item.name}
-            </NavLink>
-          ))}
-        </nav>
+                <span
+                  className={cn(
+                    'text-gray-400 group-hover:text-gray-300',
+                    'mr-4 size-6 shrink-0 material-icons-round'
+                  )}
+                  aria-hidden="true"
+                >
+                  {item.icon}
+                </span>
+                {!isCollapsed && item.name}
+              </NavLink>
+            ))}
+          </nav>
+        }
       </aside>
-      <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-60">
+
+      
+      <div className={cn('flex flex-col sm:gap-4 sm:py-4', isCollapsed ? 'sm:pl-16' : 'sm:pl-60')}>
         <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:justify-end sm:border-0 sm:bg-transparent sm:px-6">
           <Progress />
           <Drawer>
@@ -132,10 +152,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 <span className="sr-only">Toggle Menu</span>
               </Button>
             </DrawerTrigger>
-            <DrawerContent
-              side="left"
-              className="bg-black pt-10 text-white sm:max-w-60"
-            >
+            <DrawerContent side="left" className="bg-black pt-10 text-white sm:max-w-60">
               <nav className="grid gap-6 text-lg font-medium">
                 <div className="flex h-16 shrink-0 items-center px-4">
                   <Logo />
@@ -149,14 +166,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                       cn(
                         'text-gray-300 hover:bg-gray-700 hover:text-white',
                         'group flex flex-1 w-full items-center rounded-md p-2 text-base font-medium',
-                        isActive && 'bg-gray-900 text-white',
+                        isActive && 'bg-gray-900 text-white'
                       )
                     }
                   >
                     <span
                       className={cn(
                         'text-gray-400 group-hover:text-gray-300',
-                        'mr-4 size-6 shrink-0 material-icons-round',
+                        'mr-4 size-6 shrink-0 material-icons-round'
                       )}
                       aria-hidden="true"
                     >
@@ -171,27 +188,17 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           </Drawer>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="overflow-hidden rounded-full"
-              >
+              <Button variant="outline" size="icon" className="overflow-hidden rounded-full">
                 <span className="sr-only">Open user menu</span>
                 <User2 className="size-6 rounded-full" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={() => navigate('./profile')}
-                className={cn('block px-4 py-2 text-sm text-gray-700')}
-              >
+              <DropdownMenuItem onClick={() => navigate('./profile')} className={cn('block px-4 py-2 text-sm text-gray-700')}>
                 Your Profile
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className={cn('block px-4 py-2 text-sm text-gray-700 w-full')}
-                onClick={() => logout.mutate({})}
-              >
+              <DropdownMenuItem className={cn('block px-4 py-2 text-sm text-gray-700 w-full')} onClick={() => logout.mutate({})}>
                 Sign Out
               </DropdownMenuItem>
             </DropdownMenuContent>
