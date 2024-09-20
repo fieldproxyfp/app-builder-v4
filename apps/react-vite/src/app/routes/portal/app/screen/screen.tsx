@@ -178,7 +178,7 @@ export const ScreenRoute = () => {
           </NavLink>
         </div>
         <Button
-          variant="secondary"
+          variant="default"
           size="sm"
           disabled={!hasUnSavedChanges}
           onClick={handleSave}
