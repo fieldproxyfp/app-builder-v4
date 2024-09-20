@@ -55,7 +55,7 @@ export const AppScreensRoute = () => {
                 Welcome to {app?.raw_data?.title}
               </Typography>
               <Typography variant="body">
-                Create your first screen to get started.
+                Create a screen to get started.
               </Typography>
               <CreateScreen appId={appId as string} size="lg" />
             </div>

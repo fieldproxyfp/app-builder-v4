@@ -165,7 +165,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const validateCode = () => {
     if (editorRef.current) {
       const value = editorRef.current.getValue();
-      console.log(value);
       try {
         switch (language) {
           case 'json':
