@@ -133,9 +133,9 @@ export const ScreenRoute = () => {
     [],
   );
 
-  const handleJsonChange = (value: string) => {
-    setJsonContent(value);
-    debouncedSetParsedJson(value);
+  const handleJsonChange = (value?: string) => {
+    setJsonContent(value || '');
+    debouncedSetParsedJson(value || '');
   };
 
   const handleSave = () => {
@@ -211,7 +211,10 @@ export const ScreenRoute = () => {
               </div>
 
               {screenOptions.map((screen) => (
-                <div className="flex flex-row w-full items-center justify-between gap-2">
+                <div
+                  className="flex flex-row w-full items-center justify-between gap-2"
+                  key={screen.value}
+                >
                   <NavLink
                     key={screen.value}
                     className={({ isActive }) =>

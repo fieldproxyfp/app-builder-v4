@@ -76,7 +76,7 @@ export const AppSettingsRoute = () => {
         <CodeEditor
           language="json"
           value={appJsonString}
-          onChange={(value) => setAppJsonString(value)}
+          onChange={(value) => setAppJsonString(value || '')}
         />
       </div>
     </div>

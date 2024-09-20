@@ -1,67 +1,17 @@
-'use client';
+import MonacoEditor from '@monaco-editor/react'; // Add this import
 import JSON5 from 'json5';
 import * as monaco from 'monaco-editor';
-import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
-import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker';
-import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker';
-import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
-import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
-// import { format as formatJS } from 'prettier';
-// import parserBabel from 'prettier/parser-babel';
-import { loader } from '@monaco-editor/react';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { format as formatSQL } from 'sql-formatter';
 import { Button } from '../button';
 import { Typography } from '../typography';
 
-// self.MonacoEnvironment = {
-//   getWorker(_, label) {
-//     if (label === 'json') {
-//       return new jsonWorker();
-//     }
-//     if (label === 'css' || label === 'scss' || label === 'less') {
-//       return new cssWorker();
-//     }
-//     if (label === 'html' || label === 'handlebars' || label === 'razor') {
-//       return new htmlWorker();
-//     }
-//     if (label === 'typescript' || label === 'javascript') {
-//       return new tsWorker();
-//     }
-//     return new editorWorker();
-//   },
-// };
-
-try {
-  self.MonacoEnvironment = {
-    getWorker: function (_moduleId, label: string) {
-      if (label === 'json') {
-        return new jsonWorker();
-      } else if (label === 'ts' || label === 'typescript') {
-        return new tsWorker();
-      } else if (
-        label === 'html' ||
-        label === 'handlebars' ||
-        label === 'razor'
-      ) {
-        return new htmlWorker();
-      } else if (label === 'css' || label === 'scss' || label === 'less') {
-        return new cssWorker();
-      }
-      return new editorWorker();
-    },
-    globalAPI: true,
-  };
-} catch (error) {
-  console.error('Failed to configure Monaco Environment:', error);
-}
-
-loader.config({ monaco });
+// ... existing code ...
 
 interface CodeEditorProps {
   language: 'json' | 'sql' | 'javascript';
   value: string;
-  onChange: (value: string) => void;
+  onChange: (value?: string) => void;
   options?: monaco.editor.IStandaloneEditorConstructionOptions;
   contextOptions?: { tables: Record<string, string[]> };
   theme?: 'light' | 'dark';
@@ -75,151 +25,13 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   contextOptions = {},
   theme = 'light',
 }) => {
-  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
-  const monacoEl = useRef(null);
   const [validationError, setValidationError] = useState<string | null>(null);
+  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
 
-  useEffect(() => {
-    if (monacoEl.current) {
-      editorRef.current = monaco.editor.create(monacoEl.current, {
-        value,
-        language,
-        minimap: { enabled: true },
-        folding: true,
-        lineNumbers: 'on',
-        wordWrap: 'on',
-        theme: theme === 'light' ? 'vs' : 'vs-dark',
-        ...options,
-      });
-
-      editorRef.current.onDidChangeModelContent(() => {
-        onChange(editorRef.current?.getValue() || '');
-      });
-
-      // Set up language-specific features
-      setupLanguageFeatures(language, contextOptions);
-    }
-
-    return () => editorRef.current?.dispose();
-  }, []);
-
-  useEffect(() => {
-    if (editorRef.current) {
-      editorRef.current.updateOptions({
-        theme: theme === 'dark' ? 'vs-dark' : 'vs-light',
-      });
-    }
-  }, [theme]);
-
-  useEffect(() => {
-    if (editorRef.current) {
-      const model = editorRef.current.getModel();
-      if (model) monaco.editor.setModelLanguage(model, language);
-      setupLanguageFeatures(language, contextOptions);
-    }
-  }, [language, contextOptions]);
-
-  const setupLanguageFeatures = (lang: string, context: any) => {
-    switch (lang) {
-      case 'json':
-        setupJSONFeatures();
-        break;
-      case 'sql':
-        setupSQLFeatures(context);
-        break;
-      case 'javascript':
-        setupJavaScriptFeatures();
-        break;
-    }
-  };
-
-  const setupJSONFeatures = () => {
-    monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-      validate: true,
-      allowComments: true,
-      schemas: [],
-    });
-  };
-
-  const setupSQLFeatures = (context: Record<string, string[]>) => {
-    monaco.languages.registerCompletionItemProvider('sql', {
-      provideCompletionItems: (model, position) => {
-        const textUntilPosition = model.getValueInRange({
-          startLineNumber: 1,
-          startColumn: 1,
-          endLineNumber: position.lineNumber,
-          endColumn: position.column,
-        });
-        const wordUntilPosition = model.getWordUntilPosition(position);
-        const range = {
-          startLineNumber: position.lineNumber,
-          endLineNumber: position.lineNumber,
-          startColumn: wordUntilPosition.startColumn,
-          endColumn: wordUntilPosition.endColumn,
-        };
-
-        const suggestions: monaco.languages.CompletionItem[] = [];
-
-        // Suggest table names on blank space
-        if (/\s$/.test(textUntilPosition)) {
-          Object.keys(context).forEach((table) => {
-            suggestions.push({
-              label: table,
-              kind: monaco.languages.CompletionItemKind.Class,
-              insertText: table,
-              range: range,
-            });
-          });
-        }
-
-        // Suggest column names when typing table.{column name}
-        const tableMatch = textUntilPosition.match(/(\w+)\.\w*$/);
-        if (tableMatch) {
-          const tableName = tableMatch[1];
-          const columns = context[tableName] || [];
-          columns.forEach((column) => {
-            suggestions.push({
-              label: column,
-              kind: monaco.languages.CompletionItemKind.Field,
-              insertText: column,
-              range: range,
-              detail: `Column of ${tableName}`,
-            });
-          });
-        }
-
-        return { suggestions };
-      },
-    });
-  };
-
-  const setupJavaScriptFeatures = () => {
-    monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
-      noSemanticValidation: false,
-      noSyntaxValidation: false,
-    });
-  };
-
-  const validateCode = () => {
-    if (editorRef.current) {
-      const value = editorRef.current.getValue();
-      console.log(value);
-      try {
-        switch (language) {
-          case 'json':
-            JSON.parse(value);
-            break;
-          case 'sql':
-            formatSQL(value);
-            break;
-        }
-        setValidationError(null);
-      } catch (error) {
-        console.log(error);
-        setValidationError('Invalid ' + language + error);
-      }
-    }
-  };
+  function handleEditorDidMount(editor: monaco.editor.IStandaloneCodeEditor) {
+    editorRef.current = editor;
+    formatCode();
+  }
 
   const formatCode = () => {
     if (editorRef.current) {
@@ -250,8 +62,126 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   };
 
   useEffect(() => {
-    formatCode();
-  }, [editorRef.current]);
+    if (editorRef.current) {
+      const model = editorRef.current.getModel();
+      if (model) monaco.editor.setModelLanguage(model, language);
+      setupLanguageFeatures(language, contextOptions);
+    }
+  }, [language, contextOptions]);
+
+  const setupLanguageFeatures = (lang: string, context: any) => {
+    switch (lang) {
+      case 'json':
+        setupJSONFeatures();
+        break;
+      case 'sql':
+        setupSQLFeatures(context);
+        break;
+      case 'javascript':
+        setupJavaScriptFeatures();
+        break;
+    }
+  };
+
+  const setupJSONFeatures = () => {
+    try {
+      monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+        validate: true,
+        allowComments: true,
+        schemas: [],
+      });
+    } catch (error) {
+      console.error('Failed to setup JSON features:', error);
+    }
+  };
+
+  const setupSQLFeatures = (context: Record<string, string[]>) => {
+    try {
+      monaco.languages.registerCompletionItemProvider('sql', {
+        provideCompletionItems: (model, position) => {
+          const textUntilPosition = model.getValueInRange({
+            startLineNumber: 1,
+            startColumn: 1,
+            endLineNumber: position.lineNumber,
+            endColumn: position.column,
+          });
+          const wordUntilPosition = model.getWordUntilPosition(position);
+          const range = {
+            startLineNumber: position.lineNumber,
+            endLineNumber: position.lineNumber,
+            startColumn: wordUntilPosition.startColumn,
+            endColumn: wordUntilPosition.endColumn,
+          };
+
+          const suggestions: monaco.languages.CompletionItem[] = [];
+
+          // Suggest table names on blank space
+          if (/\s$/.test(textUntilPosition)) {
+            Object.keys(context).forEach((table) => {
+              suggestions.push({
+                label: table,
+                kind: monaco.languages.CompletionItemKind.Class,
+                insertText: table,
+                range: range,
+              });
+            });
+          }
+
+          // Suggest column names when typing table.{column name}
+          const tableMatch = textUntilPosition.match(/(\w+)\.\w*$/);
+          if (tableMatch) {
+            const tableName = tableMatch[1];
+            const columns = context[tableName] || [];
+            columns.forEach((column) => {
+              suggestions.push({
+                label: column,
+                kind: monaco.languages.CompletionItemKind.Field,
+                insertText: column,
+                range: range,
+                detail: `Column of ${tableName}`,
+              });
+            });
+          }
+
+          return { suggestions };
+        },
+      });
+    } catch (error) {
+      console.error('Failed to setup SQL features:', error);
+    }
+  };
+
+  const setupJavaScriptFeatures = () => {
+    try {
+      monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+        noSemanticValidation: false,
+        noSyntaxValidation: false,
+      });
+    } catch (error) {
+      console.error('Failed to setup JavaScript features:', error);
+    }
+  };
+
+  const validateCode = () => {
+    if (editorRef.current) {
+      const value = editorRef.current.getValue();
+      console.log(value);
+      try {
+        switch (language) {
+          case 'json':
+            JSON.parse(value);
+            break;
+          case 'sql':
+            formatSQL(value);
+            break;
+        }
+        setValidationError(null);
+      } catch (error) {
+        console.log(error);
+        setValidationError('Invalid ' + language + error);
+      }
+    }
+  };
 
   return (
     <div className="code-editor-container flex flex-col h-full">
@@ -268,10 +198,20 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
           </Button>
         </div>
       </div>
-      <div
-        ref={monacoEl}
-        className="code-editor flex-grow"
-        style={{ height: '100%', width: '100%' }}
+      <MonacoEditor // Replace the editor with this component
+        height="100%"
+        language={language}
+        value={value}
+        options={{
+          minimap: { enabled: true },
+          folding: true,
+          lineNumbers: 'on',
+          wordWrap: 'on',
+          theme: theme === 'light' ? 'vs' : 'vs-dark',
+          ...options,
+        }}
+        onChange={onChange}
+        onMount={handleEditorDidMount}
       />
     </div>
   );
